@@ -24,12 +24,11 @@ TODO boxes are to be found in 'poly.py'
 
 def main():
     # Set the degree of the polynomial expansion
-    degree = 13
+    degree = 30
     data_path = 'data_linreg.json'
     # Load the data
     f = open(data_path, 'r')
     data = json.load(f)
-    print(data)
     for k, v in data.items():
         data[k] = np.array(v).reshape((len(v), 1))
     

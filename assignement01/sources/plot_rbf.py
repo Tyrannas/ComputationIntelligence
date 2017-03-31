@@ -1,45 +1,48 @@
 #!/usr/bin/env python
 import numpy as np
 import matplotlib.pyplot as plt
-import poly
+import rbf
 
 __author__ = 'bellec, subramoney'
 
 """
 Computational Intelligence TU - Graz
 Assignment: Linear and Logistic Regression
-Section: Linear Regression with polynomial features
+Section: Linear Regression with radial basis functions
 
 This file defines the plotting functions used the 'main_poly.py' and 'main_poly_model_selection.py'.
-There is nothing to modify here.
+TODO Fill in fn plot_errors
 """
 
 
-def plot_poly(data, degree, theta_opt, n_line_precision=100):
+def plot_rbf(data, n_center, theta_opt, n_line_precision=100):
     """
-    Create of plot that shows the polynomial expansion and the fit as compared to the scattered data sets.
+    Create of plot that shows the RBF expansion and the fit as compared to the scattered data sets.
 
     :param data:
-    :param degree:
+    :param n_center:
     :param theta_opt:
     :param n_line_precision:
     :return:
     """
 
     fig, ax_list = plt.subplots(2, 2)
-
+    plt.subplots_adjust(hspace=0.4)
+	
     # Plot the polynomials
     xx = np.linspace(-1, 1, n_line_precision).reshape((n_line_precision, 1))
-    XX = poly.design_matrix(xx, degree)
+    centers, sigma = rbf.get_centers_and_sigma(n_center)
+    XX = rbf.design_matrix(xx, centers, sigma)
 
     ax_list[0, 0].plot(xx, XX, linewidth=3)
 
-    plt.xlabel('x')
-    plt.ylabel('x^n')
+    ax_list[0, 0].set_xlabel('x')
+    ax_list[0, 0].set_ylabel('y')
+
 
     ax_list[0, 0].set_xlim([-1, 1])
-    ax_list[0, 0].set_ylim([-1, 1])
-    ax_list[0, 0].set_title('Polynomial up to degree {}'.format(degree))
+    ax_list[0, 0].set_ylim([0, 1])
+    ax_list[0, 0].set_title('{} RBF kernels'.format(n_center))
 
     # Computation the predicted model
     y_pred = XX.dot(theta_opt)
@@ -56,34 +59,41 @@ def plot_poly(data, degree, theta_opt, n_line_precision=100):
         ax_list[a].plot(xx, y_pred, color='black', linewidth=3)
         ax_list[a].scatter(data[x], data[y], color=c, label=ti + ' set')
 
-        plt.xlabel('x')
-        plt.ylabel('y')
+        ax_list[a].set_xlabel('x')
+        ax_list[a].set_ylabel('y')
 
-        mse = poly.compute_error(theta_opt, degree, data[x], data[y])
+        mse = rbf.compute_error(theta_opt, n_center, data[x], data[y])
 
         ax_list[a].set_title('Set {} (MSE {:.3g}) '.format(ti, mse))
         ax_list[a].set_xlim([-1, 1])
         ax_list[a].set_ylim([-5, 5])
 
 
-def plot_errors(i_best, degrees, mse_train, mse_val, mse_test):
+def plot_errors(i_best, n_centers, mse_train, mse_val, mse_test):
     """
-    Display the evolution of the error when the degree is increasing
+    Display the evolution of the error when the center number is increasing
 
     :param i_best:
-    :param degrees:
+    :param n_centers:
     :param mse_train:
     :param mse_val:
     :param mse_test:
     :return:
     """
 
-    for mse, lab in zip([mse_train, mse_val, mse_test], ['train', 'val', 'test']):
-        plt.plot(degrees, mse, label=lab, linewidth=3)
+    ######################
+    #
+    # TODO
+    #
+    # Plot with the Mean Square Error as a function of the number of centers
+    # Use a different color for each sets: train, validation and test
+    # Your are welcome to adapt the code used for the polynomial feature expansion
+    #
+    # Tips:
+    #  - Don't forget to make everything readable with legend title
 
-    plt.ylim([0, 1])
-    plt.axvline(x=degrees[i_best], color='black', linestyle='--', linewidth=3,
-                label='Optimal degree {}'.format(degrees[i_best]))
-    plt.xlabel('Degrees')
-    plt.ylabel('MSE')
-    plt.legend()
+    plt.plot(n_centers, n_centers, label='Change me', linewidth=3)
+
+    #
+    # END TODO
+    ##############
