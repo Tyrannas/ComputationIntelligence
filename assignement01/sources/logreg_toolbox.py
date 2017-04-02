@@ -101,9 +101,9 @@ def plot_logreg(data, degree, theta, E_list):
         ax[k].contour(xx1, xx2, hh, levels=[.5], linewidths=[3])
 
         ax[k].set_xlabel('x1')
+        if type(J) == np.ndarray: J = J[0]
         if k == 0:
             ax[k].set_ylabel('x2')
-
         ax[k].set_title('{} set J: {:.3f}'.format(st, J))
 
         # cbar = plt.colorbar()

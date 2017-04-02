@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import time
 import matplotlib.pyplot as plt
 from plot_rbf import plot_rbf
 import rbf
@@ -35,7 +36,9 @@ def main():
         data[k] = np.array(v).reshape((len(v), 1))
 
     # Print the training and testing errors
+    ts = time.time()
     theta, err_train, err_val, err_test = rbf.train_and_test(data, n_centers)
+    print('Execution time: {}'.format(ts - time.time()))
     print('Training error {} \t Validation error {} \t Testing error {} '.format(err_train, err_val, err_test))
 
     plot_rbf(data, n_centers, theta)
