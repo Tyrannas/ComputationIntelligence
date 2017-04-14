@@ -10,9 +10,6 @@ Assignment: Linear and Logistic Regression
 Section: Gradient descent (GD) (Logistic Regression)
 TODO Fill the cost function and the gradient
 """
-def safe_ln(x, minval=0.0000000001):
-    return np.log(x.clip(min=minval))
-
 def sigmoid(X):
     return 1. / (1 + np.exp(-X))
 
@@ -27,9 +24,9 @@ def cost(theta, x, y):
     """
 
     N, n = x.shape
-    
+
     yPred = sigmoid(x.dot(theta))
-    cost = -y.T.dot(safe_ln(yPred)) - (1 - y).T.dot(safe_ln(1 - yPred))
+    cost = -y.T.dot(np.log(yPred)) - (1 - y).T.dot(np.log(1 - yPred))
 
     #print("coût: {}".format(cost))
 
