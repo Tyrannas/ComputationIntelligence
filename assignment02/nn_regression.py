@@ -91,6 +91,7 @@ def ex_1_1_c(x_train, x_test, y_train, y_test):
     :param y_test: The testing targets
     :return:
     """
+
     seeds = 10
     n_values = [1, 2, 3, 4, 6, 8, 12, 20, 40]
 
@@ -150,6 +151,29 @@ def ex_1_2_a(x_train, x_test, y_train, y_test):
     :param y_test: The testing targets
     :return:
     """
+    seeds = 10
+    
+    alpha = [ 1e-8, 1e-7,1e-6,1e-5,1e-4,1e-3,1e-2,1e-1,1,10,100 ]
+    n_hidden = 40 
+    
+    mse_test = np.empty((len(alpha), seeds))
+    mse_train = np.empty((len(alpha), seeds))
+
+    for i, n in enumerate(alpha):
+        
+        for s in range(1, seeds + 1):
+            nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), alpha = n )
+            nn.fit(x_train, y_train)
+            a = nn.coefs_
+            a = np.mean(np.square(a[0]))
+            a = a*n/2
+            
+            mse_test[i, s - 1] = calculate_mse(nn, x_test, y_test) + a
+            mse_train[i, s - 1] = calculate_mse(nn, x_train, y_train) + a
+            
+            
+    ## TODO
+    plot_mse_vs_alpha(mse_train, mse_test, alpha)
     ## TODO
     pass
 
