@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.metrics import mean_squared_error
 from sklearn.neural_network.multilayer_perceptron import MLPRegressor
 import matplotlib.pyplot as plt
-
+from sklearn.utils import shuffle
 from nn_regression_plot import plot_mse_vs_neurons, plot_mse_vs_iterations, plot_learned_function, \
     plot_mse_vs_alpha,plot_bars_early_stopping_mse_comparison
 
@@ -142,6 +142,7 @@ def ex_1_1_d(x_train, x_test, y_train, y_test):
 
 
 def ex_1_2_a(x_train, x_test, y_train, y_test):
+
     """
     Solution for exercise 1.2 a)
     Remember to set alpha to 0 when initializing the model
@@ -188,6 +189,48 @@ def ex_1_2_b(x_train, x_test, y_train, y_test):
     :param y_test: The testing targets
     :return:
     """
+    a , b = shuffle(x_train,y_train)
+    x_val = np.empty((int(len(x_train)/2),))
+    y_val = np.empty((int(len(y_train)/2),))
+    x_val = a[int(len(x_train)/2):]
+    x_train = a[:int(len(x_train)/2)]
+    y_val = b[int(len(y_train)/2):]
+    y_train = b[:int(len(y_train)/2)]
+    
+    
+    seeds = 10
+    n_hidden = 40
+    n_iter = 2000
+
+    mse_test = np.empty((int(n_iter/20),))
+    mse_val = np.empty((int(n_iter/20),))
+#    mse_train = np.empty((int(n_iter/20),))
+    result1 = np.empty((seeds,))
+    result2 = np.empty((seeds,))
+    result3 = np.empty((seeds,))
+    for s in range(seeds):
+        nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), warm_start=True, max_iter=1,random_state=s)
+        k=0
+        for i in range(n_iter):
+            nn.fit(x_train, y_train)
+            if i%20 == 0:
+                mse_test[k] = calculate_mse(nn, x_test, y_test)
+                mse_val[k] = calculate_mse(nn, x_val, y_val)
+ #               mse_train[k] = calculate_mse(nn, x_train, y_train)
+                k = k + 1
+        index = np.argmin(mse_val)
+        index1 = np.argmin(mse_test)
+        
+        result1[s] = mse_test[int(n_iter/20)-1]
+        result2[s] = mse_test[index]
+        result3[s] = mse_test[index1]
+        
+#        print(mse_test[int(n_iter/20)-1],mse_test[index],index,mse_test[index1],index1)
+#        
+#    plt.plot(mse_val,'r')
+#    plt.plot(mse_train,'g')
+#    plt.plot(mse_test,'b')
+    
     ## TODO
     pass
 
