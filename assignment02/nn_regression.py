@@ -162,7 +162,7 @@ def ex_1_2_a(x_train, x_test, y_train, y_test):
     for i, n in enumerate(alpha):
         
         for s in range(1, seeds + 1):
-            nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), alpha = n )
+            nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), alpha = n, random_state = s )
             nn.fit(x_train, y_train)
             a = nn.coefs_
             a = np.mean(np.square(a[0]))
