@@ -66,8 +66,8 @@ def ex_2_2(input1, target1, input2, target2):
             k = k+1
             
             
-    hidden_layer_weights = model.coefs_ 
-    plot_hidden_layer_weights(hidden_layer_weights[0])   
+    #hidden_layer_weights = model.coefs_ 
+    #plot_hidden_layer_weights(hidden_layer_weights[0])   
     
     plot_histogram_of_acc(acc_train, acc_test)
     print(C)
