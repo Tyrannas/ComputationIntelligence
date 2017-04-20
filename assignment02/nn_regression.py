@@ -182,7 +182,8 @@ def ex_1_2_b(x_train, x_test, y_train, y_test):
     Remember to set alpha and momentum to 0 when initializing the model
     :param x_train: The training dataset
     :param x_test: The testing dataset
-    :param y_train: The training targets
+
+:param y_train: The training targets
     :param y_test: The testing targets
     :return:
     """
@@ -245,5 +246,76 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
     :param y_test:
     :return:
     '''
+    def ex_1_2_c(x_train, x_test, y_train, y_test):
+    '''
+    Solution for exercise 1.2 c)
+    :param x_train:
+    :param x_test:
+    :param y_train:
+    :param y_test:
+    :return:
+    '''
+
+    a, b = shuffle(x_train,y_train)
+
+    x_val = np.empty((int(len(x_train)/2),))
+
+    y_val = np.empty((int(len(y_train)/2),))
+
+    x_val = a[int(len(x_train)/2):]
+
+    x_train = a[:int(len(x_train)/2)]
+
+    y_val = b[int(len(y_train)/2):]
+
+    y_train = b[:int(len(y_train)/2)]
+
+    seeds = 10
+    
+    n_iter = 1000
+   
+    mse_test = np.empty((seeds,))
+
+    mse_val = np.empty((seeds,))
+
+    mse_train = np.empty((seeds,))
+    
+    k = np.zeros((seeds,))
+    
+    for s in range(seeds):
+        nn = MLPRegressor(alpha = 0.001 , activation='logistic', solver='lbfgs' , hidden_layer_sizes=(8,), warm_start=True, max_iter=1,random_state=s)
+        mse_val[s] = 100
+        for i in range(n_iter):
+            nn.fit(x_train, y_train)
+            k[s] = k[s] + 1
+            if i%5 == 0:
+                a = nn.coefs_
+                a = np.mean(np.square(a[0]))
+                a = a*0.001/2
+                mse = calculate_mse(nn, x_val, y_val)+a
+                if mse>mse_val[s]:
+                    mse_val[s] = mse
+                    mse_test[s] =   calculate_mse(nn, x_test, y_test)+a
+                    mse_test[s] =   calculate_mse(nn, x_train, y_train)+a            
+                    break
+                else:
+                    mse_val[s] = mse
+
+    meantrain = np.mean(mse_train)
+    stdtrain = np.std(mse_train)
+    meanval = np.mean(mse_val)
+    stdval = np.std(mse_val)
+    meantest = np.mean(mse_test)
+    stdtest = np.std(mse_test)
+    
+    print(meantrain,meanval,meantest,'   ', stdtrain,stdval,stdtest)
+    
+    index = np.argmin(mse_val)
+    
+    print(mse_train[index],mse_val[index],mse_test[index],k[index])
+    
+    print(k)
+    ## TODO
+    pass
     ## TODO
     pass
