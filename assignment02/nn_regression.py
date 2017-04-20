@@ -314,8 +314,7 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
     
     print(mse_train[index],mse_val[index],mse_test[index],k[index])
     
-    print(k)
+   
     ## TODO
     pass
-    ## TODO
-    pass
+   
