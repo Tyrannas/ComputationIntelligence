@@ -21,6 +21,20 @@ Fill in all the sections containing TODO!
 
 def ex_2_1(input2, target2):
     ## TODO
+    target2 = np.transpose(target2)
+    target2 = target2[1]
+    nn = MLPClassifier(hidden_layer_sizes=(8, ), activation='tanh', solver='adam', max_iter=200)
+    print(target2)
+    model = nn.fit(input2,target2)
+    
+    y_predict = model.predict(input2)
+    
+    C = confusion_matrix(y_predict,target2)
+    print(C) #first row = down , second row = right , third row = left , fourth row = up 
+    hidden_layer_weights = model.coefs_
+    
+    plot_hidden_layer_weights(hidden_layer_weights[0])
+    
     pass
 
 
