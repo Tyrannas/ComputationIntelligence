@@ -1,7 +1,7 @@
 from sklearn.metrics import confusion_matrix, mean_squared_error
 
 from sklearn.neural_network.multilayer_perceptron import MLPClassifier
-from nn_classification_plot import plot_hidden_layer_weights, plot_histogram_of_acc
+from nn_classification_plot import plot_image,plot_hidden_layer_weights, plot_histogram_of_acc
 import numpy as np
 
 
@@ -24,13 +24,13 @@ def ex_2_1(input2, target2):
     target2 = np.transpose(target2)
     target2 = target2[1]
     nn = MLPClassifier(hidden_layer_sizes=(8, ), activation='tanh', solver='adam', max_iter=200)
-    print(target2)
+    
     model = nn.fit(input2,target2)
     
     y_predict = model.predict(input2)
     
     C = confusion_matrix(y_predict,target2)
-    print(C) #first row = down , second row = right , third row = left , fourth row = up 
+    print(C)
     hidden_layer_weights = model.coefs_
     
     plot_hidden_layer_weights(hidden_layer_weights[0])
@@ -66,8 +66,8 @@ def ex_2_2(input1, target1, input2, target2):
             k = k+1
             
             
-    #hidden_layer_weights = model.coefs_ 
-    #plot_hidden_layer_weights(hidden_layer_weights[0])   
+    hidden_layer_weights = model.coefs_ 
+    plot_hidden_layer_weights(hidden_layer_weights[0])   
     
     plot_histogram_of_acc(acc_train, acc_test)
     print(C)

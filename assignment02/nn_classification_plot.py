@@ -15,6 +15,15 @@ __author__ = 'bellec,subramoney'
 IMAGE_DIM = (32, 30)
 
 
+def plot_image(image_matrix):
+    ax = plt.subplot()
+    # Rotate the image the right way using .T
+    ax.imshow(image_matrix.reshape(*IMAGE_DIM).T, cmap=plt.cm.gray)
+    ax.set_xticks(())
+    ax.set_yticks(())
+    plt.show()
+
+
 def plot_random_images(inp, n_images=3):
     """
     Picks some random images from the dataset passed in (default 3) and plots them as an image
@@ -56,7 +65,7 @@ def plot_hidden_layer_weights(hidden_layer_weights,max_plot=10):
 
 def plot_histogram_of_acc(train_acc, test_acc):
     """
-    Plots the histogram of trianing and testing accuracy
+    Plots the histogram of training and testing accuracy
     :param train_acc: Training accuracy
     :param test_acc: Testing accuracy
     :return:
