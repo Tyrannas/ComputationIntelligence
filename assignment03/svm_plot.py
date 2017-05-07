@@ -168,7 +168,7 @@ def plot_score_vs_gamma(train_scores, test_scores, gamma_list, lin_score_train=-
 
     plt.axhline(y=baseline, label='Chance level', color='red', linestyle='dashed', lw=2)
 
-    plt.xlabel("Value of \gamma")
+    plt.xlabel("Value of gamma")
     plt.ylabel("Score (mean accuracy)")
     plt.ylim([baseline - .1, 1.1])
     plt.legend()

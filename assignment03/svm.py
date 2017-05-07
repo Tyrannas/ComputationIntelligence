@@ -14,7 +14,7 @@ Part 1: SVM, Kernels
 TODOS are all contained here.
 """
 
-__author__ = 'bellec,subramoney'
+__author__ = 'bellec, subramoney'
 
 
 def ex_1_a(x, y):
@@ -86,11 +86,16 @@ def ex_2_a(x_train, y_train, x_test, y_test):
     :param y_test: Testing labels
     :return:
     """
-    ###########
-    ## TODO:
-    ## Train an SVM with a linear kernel for the given dataset
-    ## and plot the decision boundary and support vectors  for each using 'plot_svm_decision_boundary' function
-    ###########
+    # create and train the SVM.
+    clf = svm.SVC(C=0.1, kernel='linear')
+    clf.fit(x_train, y_train)
+
+    # plot the decision boundary on both datasets
+    plot_svm_decision_boundary(clf, x_train, y_train, x_test, y_test)
+
+    # compute the mean accuracy of the test datas
+    print("SVC's score: {}".format(clf.score(x_test, y_test)))
+
     pass
 
 
@@ -103,16 +108,37 @@ def ex_2_b(x_train, y_train, x_test, y_test):
     :param y_test: Testing labels
     :return:
     """
-    ###########
-    ## TODO:
-    ## Train SVMs with polynomial kernels for different values of the degree
-    ## (Remember to set the 'coef0' parameter to 1)
-    ## and plot the variation of the test and training scores with polynomial degree using 'plot_score_vs_degree' func.
-    ## Plot the decision boundary and support vectors for the best value of degree
-    ## using 'plot_svm_decision_boundary' function
-    ###########
-    degrees = range(1, 20)
+    # parameters
+    r_value = 1
+    degrees = range(1, 21)
+    C = 0.1 
 
+    # store the scores
+    train_scores = []
+    test_scores = []
+
+    # store the created svm so we don't have to train the best twice. 
+    clfs = []
+
+    # create and train the svm with a polynomial kernel for every d value
+    for d in degrees:
+        clf = svm.SVC(C=C, kernel='poly', degree=d, coef0=r_value)
+        clf.fit(x_train, y_train)
+        clfs.append(clf)
+        # compute the scores
+        train_scores.append(clf.score(x_train, y_train))
+        test_scores.append(clf.score(x_test, y_test))
+
+    # find the svm with the better test score
+    max_index = test_scores.index(max(test_scores))
+    clf = clfs[max_index]
+    print("best d value: {}, with an accuracy of {}".format(degrees[max_index], test_scores[max_index]))
+
+    # plot the decision boundary on both datasets for the best svm
+    plot_svm_decision_boundary(clf, x_train, y_train, x_test, y_test)
+
+    # plot the score depending of d
+    plot_score_vs_degree(train_scores, test_scores, degrees)
 
 def ex_2_c(x_train, y_train, x_test, y_test):
     """
@@ -123,14 +149,36 @@ def ex_2_c(x_train, y_train, x_test, y_test):
     :param y_test: Testing labels
     :return:
     """
-    ###########
-    ## TODO:
-    ## Train SVMs with RBF kernels for different values of the gamma
-    ## and plot the variation of the test and training scores with gamma using 'plot_score_vs_gamma' function.
-    ## Plot the decision boundary and support vectors for the best value of gamma
-    ## using 'plot_svm_decision_boundary' function
-    ###########
+    # parameters
     gammas = np.arange(0.01, 2, 0.02)
+    C = 0.1 
+
+    # store the scores
+    train_scores = []
+    test_scores = []
+
+    # store the created svm so we don't have to train the best twice. 
+    clfs = []
+
+    # create and train the svm with a polynomial kernel for every d value
+    for g in gammas:
+        clf = svm.SVC(C=C, kernel='rbf', gamma=g)
+        clf.fit(x_train, y_train)
+        clfs.append(clf)
+        # compute the scores
+        train_scores.append(clf.score(x_train, y_train))
+        test_scores.append(clf.score(x_test, y_test))
+
+    # find the svm with the better test score
+    max_index = test_scores.index(max(test_scores))
+    clf = clfs[max_index]
+    print("best g value: {}, with an accuracy of {}".format(gammas[max_index], test_scores[max_index]))
+
+    # plot the decision boundary on both datasets for the best svm
+    plot_svm_decision_boundary(clf, x_train, y_train, x_test, y_test)
+
+    # plot the score depending of g
+    plot_score_vs_gamma(train_scores, test_scores, gammas)
 
 
 def ex_3_a(x_train, y_train, x_test, y_test):
