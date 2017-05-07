@@ -199,6 +199,42 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     ## - Mind that the chance level is not .5 anymore and add the score obtained with the linear kernel as optional argument of this function
     ###########
 
+    # parameters
+
+    C = 0.1
+
+    # store the scores
+    train_scores = []
+    test_scores = []
+
+    # store the created svm so we don't have to train the best twice.
+    clfs = []
+    #first the linear and then the rbf
+    clf = svm.SVC(C=C, kernel='linear', decision_function_shape='ovr')
+    clf.fit(x_train, y_train)
+    clfs.append(clf)
+    # compute the scores
+    train_scores.append(clf.score(x_train, y_train))
+    test_scores.append(clf.score(x_test, y_test))
+
+
+
+    gammas = np.linspace(0.00001, 0.001, 10)
+    for g in gammas:
+        clf = svm.SVC(C=C, kernel='rbf', gamma=g,decision_function_shape='ovr')
+        clf.fit(x_train, y_train)
+        clfs.append(clf)
+
+
+        # compute the scores
+
+        train_scores.append(clf.score(x_train, y_train))
+        test_scores.append(clf.score(x_test, y_test))
+
+    # plot the score depending of g , with linear score
+    plot_score_vs_gamma(train_scores[1:], test_scores[1:], gammas,train_scores[0],test_scores[0])
+
+
 
 def ex_3_b(x_train, y_train, x_test, y_test):
     """
@@ -218,10 +254,29 @@ def ex_3_b(x_train, y_train, x_test, y_test):
     ## Plot the first 10 occurrences of the most misclassified digit using plot_mnist.
     ###########
 
+    C=0.1
+    clf = svm.SVC(C=C, kernel='linear', decision_function_shape='ovr')
+    clf.fit(x_train, y_train)
+    y_pred = clf.predict(x_test)
+
     labels = range(1, 6)
 
+    plot_confusion_matrix(confusion_matrix(y_test,y_pred),labels)
+
+
+
     sel_error = np.array([0])  # Numpy indices to select images that are misclassified.
-    i = 0  # should be the label number corresponding the largest classification error
+    i = 0   # should be the label number corresponding the largest classification error
+    #in order to find the most missclassified we sum up the missclassified of every label and then we find the one with maximum error
+    sums = np.zeros((5,))
+    k=0
+    for j in y_pred:
+        if j!= y_test[k]:
+            sums[y_test[k]-1] +=1
+            sel_error = np.append(sel_error,k)
+        k+=1
+    i = np.argmax(sums)
+
 
     # Plot with mnist plot
-    plot_mnist(x_test[sel_err], y_pred[sel_err], labels=labels[i], k_plots=10, prefix='Real class')
+    plot_mnist(x_test[sel_error], y_pred[sel_error], labels=labels[i], k_plots=10, prefix='Real class')

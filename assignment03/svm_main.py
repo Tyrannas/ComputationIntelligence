@@ -49,8 +49,8 @@ def ex_2():
 
     plot_data_points(x_train, y_train, x_test, y_test)
 
-    # ex_2_a(x_train, y_train, x_test, y_test)
-    # ex_2_b(x_train, y_train, x_test, y_test)
+    ex_2_a(x_train, y_train, x_test, y_test)
+    ex_2_b(x_train, y_train, x_test, y_test)
     ex_2_c(x_train, y_train, x_test, y_test)
 
 
@@ -61,14 +61,15 @@ def ex_3():
 
     plot_mnist(x_train, y_train)
 
-    ex_3_a(x_train, y_train, x_test, y_test)
+    # ex_3_a(x_train, y_train, x_test, y_test)
     ex_3_b(x_train, y_train, x_test, y_test)
 
 
 def main():
     # ex_1()
-    ex_2()
-    # ex_3()
+
+    # ex_2()
+    ex_3()
 
 
 if __name__ == '__main__':
