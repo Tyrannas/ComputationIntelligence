@@ -24,15 +24,12 @@ def ex_1_a(x, y):
     :param y: The y values
     :return:
     """
-    ###########
-    ## TODO:
-    ## Train an SVM with a linear kernel
-    ## and plot the decision boundary and support vectors using 'plot_svm_decision_boundary' function
-    ###########
-    clf = svm.SVC(C= 1, kernel = 'linear')
-    clf.fit(x,y)
+    # create and train the support vector machine.
+    clf = svm.SVC(C=1, kernel='linear')
+    clf.fit(x, y)
 
-    plot_svm_decision_boundary(clf,x,y)
+    # plot results 
+    plot_svm_decision_boundary(clf, x, y)
     pass
 
 
@@ -43,19 +40,15 @@ def ex_1_b(x, y):
     :param y: The y values
     :return:
     """
-    ###########
-    ## TODO:
-    ## Add a point (4,0) with label 1 to the data set and then
-    ## train an SVM with a linear kernel
-    ## and plot the decision boundary and support vectors using 'plot_svm_decision_boundary' function
-    ###########
+    # add the point to the datas
+    x = np.vstack((x, [4, 0]))
+    y = np.hstack((y, 1))
 
-    x = np.append(x,[[4, 0]], axis=0)
-    y = np.append(y,1)
-
+    # create and train the SVM.
     clf = svm.SVC(C=0.1, kernel='linear')
     clf.fit(x, y)
 
+    # plot results
     plot_svm_decision_boundary(clf, x, y)
     pass
 
@@ -63,19 +56,21 @@ def ex_1_b(x, y):
 def ex_1_c(x, y):
     """
     Solution for exercise 1 c)
+    Objective: test the influence of the differents 
+               values for C, the positive cost factor
     :param x: The x values
     :param y: The y values
     :return:
     """
-    ###########
-    ## TODO:
-    ## Add a point (4,0) with label 1 to the data set and then
-    ## train an SVM with a linear kernel with different values of C
-    ## and plot the decision boundary and support vectors  for each using 'plot_svm_decision_boundary' function
-    ###########
-    x = np.append(x, [[4, 0]], axis=0)
-    y = np.append(y, 1)
+
+    # add the point to the datas
+    x = np.vstack((x, [4, 0]))
+    y = np.hstack((y, 1))
+
+    # values for C 
     Cs = [1e6, 1, 0.1, 0.001]
+
+    # create, train and plot for every C value
     for C in Cs:
         clf = svm.SVC(C, kernel='linear')
         clf.fit(x, y)
