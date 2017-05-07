@@ -20,7 +20,7 @@ Fill in all the sections containing TODO!
 
 
 def ex_2_1(input2, target2):
-    ## TODO
+
     target2 = np.transpose(target2)
     target2 = target2[1]
     nn = MLPClassifier(hidden_layer_sizes=(8, ), activation='tanh', solver='adam', max_iter=200)
@@ -39,7 +39,7 @@ def ex_2_1(input2, target2):
 
 
 def ex_2_2(input1, target1, input2, target2):
-    ## TODO
+
     target1 = np.transpose(target1)
     target1 = target1[0]
     target2 = np.transpose(target2)
@@ -53,12 +53,12 @@ def ex_2_2(input1, target1, input2, target2):
         nn = MLPClassifier(random_state = i, hidden_layer_sizes=(20, ), activation='tanh', solver='adam', max_iter=1000)
         
         model = nn.fit(input1,target1)
-        acc_train[i] = model.score(input1,target1)
-        acc_test[i] = model.score(input2,target2)
+        acc_train[i] = model.score(input1, target1)
+        acc_test[i] = model.score(input2, target2)
         if acc_test[i]>max:
             max = acc_test[i]
             y_predict = model.predict(input2)
-            C = confusion_matrix(target2,y_predict)
+            C = confusion_matrix(target2, y_predict)
     k=0
     for i,a in enumerate(target2):
         if a != y_predict[i] and k <20:
@@ -73,8 +73,3 @@ def ex_2_2(input1, target1, input2, target2):
     print(C)
         
     pass
-
-
-def calculate_mse(nn, x, y):
-    ## TODO
-    return 0

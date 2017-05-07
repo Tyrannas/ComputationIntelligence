@@ -44,11 +44,11 @@ def main():
     ## End plot some random images
 
     ## 2.1
-    ex_2_1(input2, target2)
+    # ex_2_1(input2, target2)
     ## End 2.1
 
     ## 2.2
-    # ex_2_2(input1, target1, input2, target2)
+    ex_2_2(input1, target1, input2, target2)
     ## End 2.2
 
 
@@ -56,3 +56,6 @@ if __name__ == '__main__':
     main()
 
 
+$$\frac{\partial z_{out}}{\partial w^i}= \frac{\partial (f_{out}(a_{out}))}{\partial w^i} = \frac{\partial (f_{out}(\sum_iw_iz^i_h))}{\partial w^i} = f'_{out}(a_{out})z_h^i
+$$
+\\

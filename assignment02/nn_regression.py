@@ -28,10 +28,9 @@ def calculate_mse(nn, x, y):
     :param y: The targets
     :return: Training MSE, Testing MSE
     """
-    ## TODO
+    # compute the predicted target with the trained nn
     y_pred = nn.predict(x)
     mse = np.power(y - y_pred, 2)
-    # print(mse.shape)
     return np.mean(mse)
 
 
@@ -45,14 +44,13 @@ def ex_1_1_a(x_train, x_test, y_train, y_test,n_hidden):
     :param y_test: The testing targets
     :return:
     """
-    # maximum number of hidden neurons
     
-    nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden))
+    nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden,), max_iter=200, alpha=0)
     nn.fit(x_train, y_train)
     y_pred_train = nn.predict(x_train)
     y_pred_test = nn.predict(x_test)
     plot_learned_function(n_hidden, x_train, y_train, y_pred_train, x_test, y_test, y_pred_test)
-    ## TODO
+
     pass
 
 def ex_1_1_b(x_train, x_test, y_train, y_test):
@@ -66,19 +64,20 @@ def ex_1_1_b(x_train, x_test, y_train, y_test):
     :return:
     """
     # store test and train error in numpy arrays
+    mses_train = np.empty(10)
+    mses_test = np.empty(10)
 
-    # for every number n of hidden neurons store the test and train error
+    n_hidden = 10       
+
+    # for every different seed i, store the associated training and testing errors
     for i in range(10):
-        n_hidden = 10
-        nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), random_state=i)
+        nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), random_state=i, max_iter=200)
         nn.fit(x_train, y_train)
-        mse_test = calculate_mse(nn, x_test, y_test)
-        mse_train = calculate_mse(nn, x_train, y_train)
+        mses_test[i] = calculate_mse(nn, x_test, y_test)
+        mses_train[i] = calculate_mse(nn, x_train, y_train)
 
-        print("train mse: {}, test mse {}".format(mse_train, mse_test))
-    
-    # and plot the errors 
-    ## TODO
+    print("min_train: {}, max_train: {}, mean_train: {}, std_train: {}".format(np.min(mses_train), np.max(mses_train), np.mean(mses_train), np.std(mses_train)))
+    print("min_test: {}, max_test: {}, mean_test: {}, std_test: {}".format(np.min(mses_test), np.max(mses_test), np.mean(mses_test), np.std(mses_test)))
     pass
 
 
@@ -92,7 +91,9 @@ def ex_1_1_c(x_train, x_test, y_train, y_test):
     :param y_test: The testing targets
     :return:
     """
+    # number of different seeds
     seeds = 10
+    # values of number of hidden neurons
     n_values = [1, 2, 3, 4, 6, 8, 12, 20, 40]
 
     mse_test = np.empty((len(n_values), seeds))
@@ -105,7 +106,7 @@ def ex_1_1_c(x_train, x_test, y_train, y_test):
             nn.fit(x_train, y_train)
             mse_test[i, s - 1] = calculate_mse(nn, x_test, y_test)
             mse_train[i, s - 1] = calculate_mse(nn, x_train, y_train)
-    ## TODO
+    
     plot_mse_vs_neurons(mse_train, mse_test, n_values)
     pass
 
@@ -125,10 +126,13 @@ def ex_1_1_d(x_train, x_test, y_train, y_test):
 
     mse_test = np.empty((len(n_values), n_iter))
     mse_train = np.empty((len(n_values), n_iter))
+
+    # for each different solver
     for solver in ['lbfgs', 'adam', 'sgd']:
+        # for each value of n_hidden
         for index, n in enumerate(n_values):
             n_hidden = n
-            nn = MLPRegressor(activation='logistic', solver=solver, hidden_layer_sizes=(n_hidden), warm_start=True, max_iter=1)
+            nn = MLPRegressor(activation='logistic', solver=solver, hidden_layer_sizes=(n_hidden), warm_start=True, max_iter=1, alpha=0)
             for i in range(n_iter):
                 nn.fit(x_train, y_train)
                 mse_test[index, i] = calculate_mse(nn, x_test, y_test)
@@ -151,96 +155,32 @@ def ex_1_2_a(x_train, x_test, y_train, y_test):
     :param y_test: The testing targets
     :return:
     """
+    # number of different seeds
     seeds = 10
-    
-    alpha = [ 1e-8, 1e-7,1e-6,1e-5,1e-4,1e-3,1e-2,1e-1,1,10,100 ]
+    # values for alpha
+    alphas = [ 1e-8, 1e-7,1e-6,1e-5,1e-4,1e-3,1e-2,1e-1,1,10,100 ]
     n_hidden = 40 
     
-    mse_test = np.empty((len(alpha), seeds))
-    mse_train = np.empty((len(alpha), seeds))
+    mse_test = np.empty((len(alphas), seeds))
+    mse_train = np.empty((len(alphas), seeds))
 
-    for i, n in enumerate(alpha):
-        
+    for i, alpha in enumerate(alphas):
         for s in range(1, seeds + 1):
-            nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), alpha = n ,random_state=s)
+            nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), alpha = alpha ,random_state=s)
             nn.fit(x_train, y_train)
+            # computation of the msereg
             a = nn.coefs_
             a = np.mean(np.square(a[0]))
-            a = a*n/2
+            a = a*alpha/2
             
             mse_test[i, s - 1] = calculate_mse(nn, x_test, y_test) + a
             mse_train[i, s - 1] = calculate_mse(nn, x_train, y_train) + a
             
-            
-    ## TODO
-    plot_mse_vs_alpha(mse_train, mse_test, alpha)
-    ## TODO
+    plot_mse_vs_alpha(mse_train, mse_test, alphas)
     pass
 
 
-#def ex_1_2_b(x_train, x_test, y_train, y_test):
-#    """
-#    Solution for exercise 1.2 b)
-#    Remember to set alpha and momentum to 0 when initializing the model
-#    :param x_train: The training dataset
-#    :param x_test: The testing dataset
-#    :param y_train: The training targets
-#    :param y_test: The testing targets
-#    :return:
-#   """
-#    a , b = shuffle(x_train,y_train)
-#    x_val = np.empty((int(len(x_train)/2),))
-#    y_val = np.empty((int(len(y_train)/2),))
-#    x_val = a[int(len(x_train)/2):]
-#    x_train = a[:int(len(x_train)/2)]
-#    y_val = b[int(len(y_train)/2):]
-#    y_train = b[:int(len(y_train)/2)]
-#    
-#    x_val = x_train[::2]
-#    x_train = x_train[1::2]
-#    y_val = y_train[::2]
-#    y_train = y_train[1::2]
-#    seeds = 10
-#    n_hidden = 40
-#    n_iter = 2000
-#
-#    mse_test = np.empty((int(n_iter/20),))
-#    mse_val = np.empty((int(n_iter/20),))
-#    mse_train = np.empty((int(n_iter/20),))
-#    result1 = np.empty((seeds,))
-#    result2 = np.empty((seeds,))
-#    result3 = np.empty((seeds,))
-#    for s in range(seeds):
-#        nn = MLPRegressor(alpha = 0.001 , activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), warm_start=True, max_iter=1,random_state=s)
-#        k=0
-#        for i in range(n_iter):
-#            nn.fit(x_train, y_train)
-#            if i%20 == 0:
-#                a = nn.coefs_
-#                a = np.mean(np.square(a[0]))
-#                a = a*0.001/2
-#                mse_test[k] = calculate_mse(nn, x_test, y_test)+a
-#                mse_val[k] = calculate_mse(nn, x_val, y_val)+a
-#                mse_train[k] = calculate_mse(nn, x_train, y_train)+a
-#                k = k + 1
-#        index = np.argmin(mse_val)
-#        index1 = np.argmin(mse_test)
-#        
-#        result1[s] = mse_test[int(n_iter/20)-1]
-#        result2[s] = mse_test[index]
-#        result3[s] = mse_test[index1]
-#        
-##        print(mse_test[int(n_iter/20)-1],mse_test[index],index,mse_test[index1],index1)
-##        
-##    plt.plot(mse_val,'r')
-##    plt.plot(mse_train,'g')
-##    plt.plot(mse_test,'b')
-##    
-#    plt.plot(result1,'r')
-#    plt.plot(result2,'g')
-#    plt.plot(result3,'b')
-#    ## TODO
-#    pass
+
 def ex_1_2_b(x_train, x_test, y_train, y_test):
 
     """
@@ -260,103 +200,63 @@ def ex_1_2_b(x_train, x_test, y_train, y_test):
     :return:
 
     """
-
+    # split the datas to get a validation set
     a, b = shuffle(x_train,y_train)
-
     x_val = np.empty((int(len(x_train)/2),))
-
     y_val = np.empty((int(len(y_train)/2),))
-
     x_val = a[int(len(x_train)/2):]
-
     x_train = a[:int(len(x_train)/2)]
-
     y_val = b[int(len(y_train)/2):]
-
     y_train = b[:int(len(y_train)/2)]
 
-    
-
-    
-
+    # parameters
     seeds = 10
-
     n_hidden = 40
-
     n_iter = 2000
 
-
-
+    # errors
     mse_test = np.empty((int(n_iter/20),))
-
     mse_val = np.empty((int(n_iter/20),))
-
     mse_train = np.empty((int(n_iter/20),))
 
-
-
+    # results
     result1 = np.empty((seeds,))
-
     result2 = np.empty((seeds,))
-
     result3 = np.empty((seeds,))
 
 
-
     for s in range(seeds):
-
-        nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), warm_start=True, max_iter=1, random_state=s, alpha=0.01)
-
+        nn = MLPRegressor(activation='logistic', solver='lbfgs', hidden_layer_sizes=(n_hidden), warm_start=True, max_iter=1, random_state=s, alpha=0, momentum=0)
         k = 0
 
         for i in range(n_iter):
-
             nn.fit(x_train, y_train)
-
             if i%20 == 0:
-
                 mse_test[k] = calculate_mse(nn, x_test, y_test)
-
                 mse_val[k] = calculate_mse(nn, x_val, y_val)
-
                 mse_train[k] = calculate_mse(nn, x_train, y_train)
-
                 k = k + 1
 
         index = np.argmin(mse_val)
-
         index1 = np.argmin(mse_test)
-        print(mse_test[int(n_iter/20)-1],mse_test[index],index,mse_test[index1],index1)
-
 
         result1[s] = mse_test[int(n_iter/20)-1]
-
         result2[s] = mse_test[index]
-
         result3[s] = mse_test[index1]
-
-
-
-   
-
-
 
     seeds = np.arange(seeds)
 
+    # plot the datas
     ax = plt.subplot()
+    rect1 = ax.bar(seeds - 0.2, result1, width=0.2, color='#5194ff', align='center')   
+    rect2 = ax.bar(seeds, result2, width=0.2, color='#e83a3a', align='center')   
+    rect3 = ax.bar(seeds + 0.2, result3, width=0.2, color='#e8993a', align='center')    
 
-    ax.bar(seeds - 0.2, result1, width=0.2, color='#5194ff', align='center')   
-
-    ax.bar(seeds, result2, width=0.2, color='#e83a3a', align='center')   
-
-    ax.bar(seeds + 0.2, result3, width=0.2, color='#e8993a', align='center')    
-
-    # ax.xaxis_date()
+    # add lengend
+    ax.legend( (rect1[0],rect2[0],rect3[0]),('Last iteration MSE of Test Set', 'Best MSE of Validation Set', 'Best MSE of Test set') )
+    ax.set_xlim([-1,12])
 
     plt.show()
-
-    ## TODO
-
     pass
 
 
@@ -369,36 +269,29 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
     :param y_test:
     :return:
     '''
-
-    a, b = shuffle(x_train,y_train)
+    # separate the datas
+    a, b = shuffle(x_train,y_train, random_state=15)
 
     x_val = np.empty((int(len(x_train)/2),))
-
     y_val = np.empty((int(len(y_train)/2),))
-
     x_val = a[int(len(x_train)/2):]
-
     x_train = a[:int(len(x_train)/2)]
-
     y_val = b[int(len(y_train)/2):]
-
     y_train = b[:int(len(y_train)/2)]
-
-    seeds = 10
-    
+    # parameters
+    seeds = 100
     n_iter = 1000
-   
+    # errors
     mse_test = np.empty((seeds,))
-
     mse_val = np.empty((seeds,))
-
     mse_train = np.empty((seeds,))
     
     k = np.zeros((seeds,))
     
     for s in range(seeds):
-        nn = MLPRegressor(alpha = 0.001 , activation='logistic', solver='lbfgs' , hidden_layer_sizes=(8,), warm_start=True, max_iter=1,random_state=s)
+        nn = MLPRegressor(alpha = 0.001 , activation='logistic', solver='lbfgs' , hidden_layer_sizes=(8,), warm_start=True, max_iter=1, random_state=s)
         mse_val[s] = 100
+
         for i in range(n_iter):
             nn.fit(x_train, y_train)
             k[s] = k[s] + 1
@@ -406,28 +299,26 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
                 a = nn.coefs_
                 a = np.mean(np.square(a[0]))
                 a = a*0.001/2
-                mse = calculate_mse(nn, x_val, y_val)+a
-                if mse>mse_val[s]:
-                    mse_val[s] = mse
-                    mse_test[s] =   calculate_mse(nn, x_test, y_test)+a
-                    mse_test[s] =   calculate_mse(nn, x_train, y_train)+a            
+                mse_reg = calculate_mse(nn, x_val, y_val) + a
+                if mse_reg > mse_val[s]:
+                    mse_val[s]  = mse_reg
+                    mse_test[s] = calculate_mse(nn, x_test, y_test) + a
+                    mse_train[s] = calculate_mse(nn, x_train, y_train) + a            
                     break
                 else:
-                    mse_val[s] = mse
+                    mse_val[s] = mse_reg
 
-    meantrain = np.mean(mse_train)
-    stdtrain = np.std(mse_train)
-    meanval = np.mean(mse_val)
-    stdval = np.std(mse_val)
-    meantest = np.mean(mse_test)
-    stdtest = np.std(mse_test)
+    mean_train = np.mean(mse_train)
+    std_train = np.std(mse_train)
+    mean_val = np.mean(mse_val)
+    std_val = np.std(mse_val)
+    mean_test = np.mean(mse_test)
+    std_test = np.std(mse_test)
     
-    print(meantrain,meanval,meantest,'   ', stdtrain,stdval,stdtest)
+    print('mean train: {}, mean validation: {}, mean test: {}'.format(mean_train, mean_val, mean_test))
+    print('std train: {}, std validation: {}, std test: {}'.format(std_train, std_val, std_test))
     
     index = np.argmin(mse_val)
-    
-    print(mse_train[index],mse_val[index],mse_test[index],k[index])
-    
-    print(k)
-    ## TODO
+
+    print('mse_train: {}, mse validation: {}, mse test: {}, number of iterations: {}, best seed: {}'.format(mse_train[index], mse_val[index], mse_test[index], k[index], index))
     pass
