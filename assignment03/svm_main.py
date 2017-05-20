@@ -50,8 +50,8 @@ def ex_2():
     plot_data_points(x_train, y_train, x_test, y_test)
 
     ex_2_a(x_train, y_train, x_test, y_test)
-    ex_2_b(x_train, y_train, x_test, y_test)
-    ex_2_c(x_train, y_train, x_test, y_test)
+    # ex_2_b(x_train, y_train, x_test, y_test)
+    # ex_2_c(x_train, y_train, x_test, y_test)
 
 
 def ex_3():
@@ -59,10 +59,13 @@ def ex_3():
     x_train, y_train, x_test, y_test = \
         data['X'], data['Y'].ravel(), data['XT'], data['YT'].ravel()
 
+
+
     plot_mnist(x_train, y_train)
 
-    # ex_3_a(x_train, y_train, x_test, y_test)
-    ex_3_b(x_train, y_train, x_test, y_test)
+
+    ex_3_a(x_train, y_train, x_test, y_test)
+    # ex_3_b(x_train, y_train, x_test, y_test)
 
 
 def main():

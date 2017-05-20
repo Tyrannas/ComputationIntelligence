@@ -2,7 +2,7 @@ import numpy as np
 from sklearn import svm
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import confusion_matrix
-
+import pylab
 from svm_plot import plot_svm_decision_boundary, plot_score_vs_degree, plot_score_vs_gamma, plot_mnist, \
     plot_confusion_matrix
 
@@ -30,6 +30,7 @@ def ex_1_a(x, y):
 
     # plot results 
     plot_svm_decision_boundary(clf, x, y)
+
     pass
 
 
@@ -45,7 +46,7 @@ def ex_1_b(x, y):
     y = np.hstack((y, 1))
 
     # create and train the SVM.
-    clf = svm.SVC(C=0.1, kernel='linear')
+    clf = svm.SVC(C=1, kernel='linear')
     clf.fit(x, y)
 
     # plot results
@@ -75,6 +76,7 @@ def ex_1_c(x, y):
         clf = svm.SVC(C, kernel='linear')
         clf.fit(x, y)
 
+
         plot_svm_decision_boundary(clf, x, y)
 
 def ex_2_a(x_train, y_train, x_test, y_test):
@@ -87,14 +89,16 @@ def ex_2_a(x_train, y_train, x_test, y_test):
     :return:
     """
     # create and train the SVM.
-    clf = svm.SVC(C=0.1, kernel='linear')
+    clf = svm.SVC(C=1., kernel='linear')
     clf.fit(x_train, y_train)
-
+    print(np.shape(clf.coef_))
     # plot the decision boundary on both datasets
     plot_svm_decision_boundary(clf, x_train, y_train, x_test, y_test)
 
     # compute the mean accuracy of the test datas
+    a = clf.support_vectors_
     print("SVC's score: {}".format(clf.score(x_test, y_test)))
+    print("number of SV:", len(a))
 
     pass
 
@@ -111,7 +115,7 @@ def ex_2_b(x_train, y_train, x_test, y_test):
     # parameters
     r_value = 1
     degrees = range(1, 21)
-    C = 0.1 
+    C = 1
 
     # store the scores
     train_scores = []
@@ -129,11 +133,13 @@ def ex_2_b(x_train, y_train, x_test, y_test):
         train_scores.append(clf.score(x_train, y_train))
         test_scores.append(clf.score(x_test, y_test))
 
+
     # find the svm with the better test score
     max_index = test_scores.index(max(test_scores))
     clf = clfs[max_index]
+    a = clf.support_vectors_
     print("best d value: {}, with an accuracy of {}".format(degrees[max_index], test_scores[max_index]))
-
+    print("number of SV:",len(a) )
     # plot the decision boundary on both datasets for the best svm
     plot_svm_decision_boundary(clf, x_train, y_train, x_test, y_test)
 
@@ -150,8 +156,8 @@ def ex_2_c(x_train, y_train, x_test, y_test):
     :return:
     """
     # parameters
-    gammas = np.arange(0.01, 2, 0.02)
-    C = 0.1 
+    gammas = np.arange(0.01, 2,0.02 )
+    C = 1
 
     # store the scores
     train_scores = []
@@ -169,10 +175,13 @@ def ex_2_c(x_train, y_train, x_test, y_test):
         train_scores.append(clf.score(x_train, y_train))
         test_scores.append(clf.score(x_test, y_test))
 
+
     # find the svm with the better test score
     max_index = test_scores.index(max(test_scores))
     clf = clfs[max_index]
+    a = clf.support_vectors_
     print("best g value: {}, with an accuracy of {}".format(gammas[max_index], test_scores[max_index]))
+    print("number of SV:", len(a))
 
     # plot the decision boundary on both datasets for the best svm
     plot_svm_decision_boundary(clf, x_train, y_train, x_test, y_test)
@@ -201,7 +210,7 @@ def ex_3_a(x_train, y_train, x_test, y_test):
 
     # parameters
 
-    C = 0.1
+    C = 0.0003
 
     # store the scores
     train_scores = []
@@ -213,26 +222,26 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     clf = svm.SVC(C=C, kernel='linear', decision_function_shape='ovr')
     clf.fit(x_train, y_train)
     clfs.append(clf)
+
     # compute the scores
     train_scores.append(clf.score(x_train, y_train))
     test_scores.append(clf.score(x_test, y_test))
 
-
-
-    gammas = np.linspace(0.00001, 0.001, 10)
-    for g in gammas:
-        clf = svm.SVC(C=C, kernel='rbf', gamma=g,decision_function_shape='ovr')
-        clf.fit(x_train, y_train)
-        clfs.append(clf)
-
-
-        # compute the scores
-
-        train_scores.append(clf.score(x_train, y_train))
-        test_scores.append(clf.score(x_test, y_test))
-
-    # plot the score depending of g , with linear score
-    plot_score_vs_gamma(train_scores[1:], test_scores[1:], gammas,train_scores[0],test_scores[0])
+    # gammas = np.linspace(0.00001, 0.001, 10)
+    # for g in gammas:
+    #     clf = svm.SVC(C=C, kernel='rbf', gamma=g,decision_function_shape='ovr')
+    #     clf.fit(x_train, y_train)
+    #     clfs.append(clf)
+    #
+    #
+    #
+    #     # compute the scores
+    #
+    #     train_scores.append(clf.score(x_train, y_train))
+    #     test_scores.append(clf.score(x_test, y_test))
+    #
+    # # plot the score depending of g , with linear score
+    # plot_score_vs_gamma(train_scores[1:], test_scores[1:], gammas,train_scores[0],test_scores[0])
 
 
 
@@ -254,7 +263,7 @@ def ex_3_b(x_train, y_train, x_test, y_test):
     ## Plot the first 10 occurrences of the most misclassified digit using plot_mnist.
     ###########
 
-    C=0.1
+    C=0.0003
     clf = svm.SVC(C=C, kernel='linear', decision_function_shape='ovr')
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
@@ -279,4 +288,4 @@ def ex_3_b(x_train, y_train, x_test, y_test):
 
 
     # Plot with mnist plot
-    plot_mnist(x_test[sel_error], y_pred[sel_error], labels=labels[i], k_plots=10, prefix='Real class')
+    plot_mnist(x_test[sel_error], y_pred[sel_error], labels=labels[i], k_plots=10, prefix='Predicted class')

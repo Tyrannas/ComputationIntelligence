@@ -125,7 +125,6 @@ def plot_svm_decision_boundary(svm, x_train, y_train, x_test=None, y_test=None):
     ax.set_title("{} SVM with C={}".format(svm.kernel.capitalize(), svm.C))
     ax.set_xlabel('X1')
     ax.set_ylabel('X2')
-
     plt.show()
 
 
