@@ -11,6 +11,45 @@ import math
 import sys
 from scipy.stats import multivariate_normal
 
+
+def LeastSquareGN(p_anchor,p0,r,max_iter,gamma):
+
+	ErrorTable = np.zeros((len(p_anchor),2))
+	p = np.array([0,0])
+	distance = np.zeros((len(p_anchor),))
+	for j in range(max_iter):
+		for i in range(len(p_anchor)):
+			x1 = (p0[0] - p_anchor[i][0])
+			y1 = (p0[1] - p_anchor[i][1])
+			distance[i] = np.sqrt(x1**2+y1**2)
+			ErrorTable[i][0] = x1/distance[i]
+			ErrorTable[i][1] = y1/distance[i]
+
+		p0 = p0 + np.dot(np.linalg.pinv(ErrorTable),r-distance)
+
+		if ((p0-p) < gamma).all():
+			break
+		else:
+			p = p0
+
+	return p0
+
+def import_data(filename):
+	data = np.loadtxt(filename, dtype='float')
+	NrSamples = np.size(data, 0)
+	d1 = np.zeros((NrSamples,))
+	d2 = np.zeros((NrSamples,))
+	d3 = np.zeros((NrSamples,))
+	d4 = np.zeros((NrSamples,))
+	for i in range(NrAnchors):
+		for j in range(NrSamples):
+			d1[j] = data[j][0]
+			d2[j] = data[j][1]
+			d3[j] = data[j][2]
+			d4[j] = data[j][3]
+	return d1,d2,d3,d4
+
+
 def plotGaussContour(mu,cov,xmin,xmax,ymin,ymax,title):
 	npts = 100
 	delta = 0.025
@@ -61,18 +100,7 @@ plt.show()
 #TODO
 
 
-data = np.loadtxt('HW4_2.data',dtype= 'float')
-NrSamples = np.size(data,0)
-d1 = np.zeros((NrSamples,))
-d2 = np.zeros((NrSamples,))
-d3 = np.zeros((NrSamples,))
-d4 = np.zeros((NrSamples,))
-for i in range(NrAnchors):
-	for j in range(NrSamples):
-		d1[j] = data[j][0]
-		d2[j] = data[j][1]
-		d3[j] = data[j][2]
-		d4[j] = data[j][3]
+d1,d2,d3,d4 = import_data('HW4_2.data')
 
 truedist1 =  np.linalg.norm(p_true-p_anchor[0])
 truedist2 =  np.linalg.norm(p_true-p_anchor[1])
@@ -90,50 +118,29 @@ print(mean1,mean2,mean3,mean4)
 
 #scenario 1
 
-data = np.loadtxt('HW4_1.data',dtype= 'float')
-NrSamples = np.size(data,0)
-for i in range(NrAnchors):
-	for j in range(NrSamples):
-		d1[j] = data[j][0]
-		d2[j] = data[j][1]
-		d3[j] = data[j][2]
-		d4[j] = data[j][3]
+d1,d2,d3,d4 = import_data('HW4_1.data')
 
 cov = np.cov(d1-truedist1)
 print("sigma = ",cov)
 
 
 
+
 #scenario 2
 
-data = np.loadtxt('HW4_2.data',dtype= 'float')
-NrSamples = np.size(data,0)
-for i in range(NrAnchors):
-	for j in range(NrSamples):
-		d1[j] = data[j][0]
-		d2[j] = data[j][1]
-		d3[j] = data[j][2]
-		d4[j] = data[j][3]
-
+d1,d2,d3,d4 = import_data('HW4_2.data')
 cov = np.cov(d2-truedist2)
 lam =  1. / np.mean(d1-truedist1)
 print("sigma = ",cov,"and lambda = ", lam)
 
 
 #scenario 3
-data = np.loadtxt('HW4_3.data',dtype= 'float')
-NrSamples = np.size(data,0)
-for i in range(NrAnchors):
-	for j in range(NrSamples):
-		d1[j] = data[j][0]
-		d2[j] = data[j][1]
-		d3[j] = data[j][2]
-		d4[j] = data[j][3]
 
-lam1 = 1. / np.mean(d1-truedist1)
-lam2 = 1. / np.mean(d2-truedist2)
-lam3 = 1. / np.mean(d3-truedist3)
-print("lambda = ", lam1,lam2,lam3)
+d1,d2,d3,d4 = import_data('HW4_3.data')
+
+lam = 1. / np.mean(d1-truedist1)
+
+print("lambda = ", lam)
 
 
 
@@ -147,35 +154,60 @@ print("lambda = ", lam1,lam2,lam3)
 #1.3.2) writing the function LeastSquaresGN()...(not here but in this file)---------------------------------------------
 #TODO
 
+
 #1.3.3) evaluating the position estimation for all scenarios------------------------------------------------------------
 
 # choose parameters
-#tol = ... # tolerance
-#maxIter = ...  # maximum number of iterations
+tol = 0.01 # tolerance
+maxIter = 10  # maximum number of iterations
 
 # store all N estimated positions
-p_estimated = np.zeros((NrSamples, 2))
 
-for scenario in range(1,5):
+
+for scenario in range(1,4):
 	if(scenario == 1):
-		data = np.loadtxt('HW4_1.data', skiprows=0)
+		d1, d2, d3, d4 = import_data('HW4_1.data')
 	elif(scenario == 2):
-		data = np.loadtxt('HW4_2.data', skiprows=0)
-	elif(scenario == 3):
-		data = np.loadtxt('HW4_3.data', skiprows=0)
-	elif(scenario == 4):                          
-    #scenario 2 without the exponential anchor
-		data = np.loadtxt('HW4_2.data', skiprows=0)
-	NrSamples = np.size(data, 0)
+		d1, d2, d3, d4 = import_data('HW4_2.data')
 
+	elif(scenario == 3):
+		d1, d2, d3, d4 = import_data('HW4_3.data')
+	# elif(scenario == 4):
+	# #scenario 2 without the exponential anchor
+	# 	d1, d2, d3, d4 = import_data('HW4_2.data')
+
+	NrSamples = np.size(d1, 0)
+
+	p_estimated = np.zeros((NrSamples, 2))
 	#perform estimation---------------------------------------
 	# #TODO
+
+
+
+
+
 	for i in range(0, NrSamples):
 		dummy = i
+		p_estimated[i] = LeastSquareGN(p_anchor, [5 * np.random.random(), 5 * np.random.random()], np.array([d1[i],d2[i], d3[i], d4[i]]), maxIter, tol)
+	plt.figure(2)
+	plt.axis([-6, 6, -6, 6])
+	plt.plot(p_estimated[:, 0], p_estimated[:, 1], 'bo')
+	plt.show()
 
 	# calculate error measures and create plots----------------
 	#TODO
+	mu = np.zeros((2,))
+	cov = np.zeros((2,2))
+	mu[0] = np.mean(p_estimated[:,0])
+	mu[1] = np.mean(p_estimated[:,1])
+	cov[0][0] = np.cov(p_estimated[:,0])
+	cov[1][1] = np.cov(p_estimated[:,1])
+	
+	plotGaussContour(mu,cov, np.min(p_estimated[:,0]),np.max(p_estimated[:,0]),np.min(p_estimated[:,1]),np.max(p_estimated[:,1]),'hola')
 
+	Fx,x = ecdf(p_estimated)
+	plt.plot(x,Fx)
+	plt.show()
 #1.4) Numerical Maximum-Likelihood Estimation of the Position (scenario 3)----------------------------------------------
 #1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
 #TODO
