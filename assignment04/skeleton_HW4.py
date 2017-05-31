@@ -202,7 +202,7 @@ for scenario in range(1,4):
 	mu[1] = np.mean(p_estimated[:,1])
 	cov[0][0] = np.cov(p_estimated[:,0])
 	cov[1][1] = np.cov(p_estimated[:,1])
-	
+
 	plotGaussContour(mu,cov, np.min(p_estimated[:,0]),np.max(p_estimated[:,0]),np.min(p_estimated[:,1]),np.max(p_estimated[:,1]),'hola')
 
 	Fx,x = ecdf(p_estimated)

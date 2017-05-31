@@ -200,12 +200,10 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     :return:
     """
     # parameters
-<<<<<<< HEAD
+
 
     C = 0.0003
-=======
-    C = 0.1
->>>>>>> 463ef2187833544bd9a6bf62dd11c7c010664d87
+
 
     # store the scores
     train_scores = []
@@ -223,7 +221,7 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     train_scores.append(clf.score(x_train, y_train))
     test_scores.append(clf.score(x_test, y_test))
 
-<<<<<<< HEAD
+
     # gammas = np.linspace(0.00001, 0.001, 10)
     # for g in gammas:
     #     clf = svm.SVC(C=C, kernel='rbf', gamma=g,decision_function_shape='ovr')
@@ -239,7 +237,7 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     #
     # # plot the score depending of g , with linear score
     # plot_score_vs_gamma(train_scores[1:], test_scores[1:], gammas,train_scores[0],test_scores[0])
-=======
+
     gammas = np.linspace(0.00001, 0.001, 10)
     for g in gammas:
         clf = svm.SVC(C=C, kernel='rbf', gamma=g,decision_function_shape='ovr')
@@ -252,7 +250,6 @@ def ex_3_a(x_train, y_train, x_test, y_test):
 
     # plot the score depending of g , with linear score
     plot_score_vs_gamma(train_scores[1:], test_scores[1:], gammas,train_scores[0],test_scores[0])
->>>>>>> 463ef2187833544bd9a6bf62dd11c7c010664d87
 
 
 
@@ -265,7 +262,7 @@ def ex_3_b(x_train, y_train, x_test, y_test):
     :param y_test: Testing labels
     :return:
     """
-<<<<<<< HEAD
+
     ###########
     ## TODO:
     ## Train multi-class SVMs with a LINEAR kernel
@@ -276,10 +273,8 @@ def ex_3_b(x_train, y_train, x_test, y_test):
     ###########
 
     C=0.0003
-=======
+
     
-    C=0.1
->>>>>>> 463ef2187833544bd9a6bf62dd11c7c010664d87
     clf = svm.SVC(C=C, kernel='linear', decision_function_shape='ovr')
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
