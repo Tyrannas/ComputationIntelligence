@@ -148,7 +148,7 @@ lam2 = 1. / np.mean(d2-truedist2)
 lam3 = 1. / np.mean(d3-truedist3)
 lam4 = 1. / np.mean(d4-truedist4)
 
-print("lambda = ", lam)
+print("lambda = ", lam1,lam2,lam3,lam4)
 
 
 
@@ -260,6 +260,7 @@ print("lambda = ", lam)
 #1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
 #TODO
 d1, d2, d3, d4 = import_data('HW4_3.data')
+
 a = np.zeros((200,200))
 for i,x in enumerate(np.linspace(-5,5,200)):
 	for j,y in enumerate(np.linspace(-5, 5, 200)):
@@ -267,12 +268,56 @@ for i,x in enumerate(np.linspace(-5,5,200)):
 		grid2 = np.linalg.norm(np.array([x,y]) - p_anchor[1])
 		grid3 = np.linalg.norm(np.array([x,y]) - p_anchor[2])
 		grid4 = np.linalg.norm(np.array([x,y]) - p_anchor[3])
-		a[i,j] = lam1*np.exp(lam1*(grid1-d1[0]))*lam2*np.exp(lam2*(grid2-d2[0]))*lam3*np.exp(lam3*(grid3-d3[0]))*lam4*np.exp(lam4*(grid4-d4[0]))
-print(a)
 
-plt.contour(np.linspace(-5,5,200),np.linspace(-5,5,200),a)
+		err1 = d1[0] - grid1 if d1[0] >= grid1 else 0
+		err2 = d2[0] - grid2 if d2[0] >= grid2 else 0
+		err3 = d3[0] - grid3 if d3[0] >= grid3 else 0
+		err4 = d4[0] - grid4 if d4[0] >= grid4 else 0
+
+		p1 = lam1 * np.exp(-lam1 * (err1))
+		p2 = lam2 * np.exp(-lam2 * (err2))
+		p3 = lam3 * np.exp(-lam3 * (err3))
+		p4 = lam4 * np.exp(-lam4 * (err4))
+
+		a[i,j] = p1 * p2 * p3 * p4
+i,j = np.unravel_index(a.argmax(),a.shape)
+
+print((-5+i*0.05),(-5+j*0.05))
+
+
+
+plt.contourf(np.linspace(-5,5,200),np.linspace(-5,5,200),a.T)
 plt.show()
+
 #1.4.2) ML-Estimator----------------------------------------------------------------------------------------------------
+num_samples = 20
+b = np.zeros((num_samples,2))
+a = np.ones((200,200))
+for k in range(num_samples):
+	for i,x in enumerate(np.linspace(-5,5,200)):
+		for j,y in enumerate(np.linspace(-5, 5, 200)):
+			grid1 = np.linalg.norm(np.array([x,y]) - p_anchor[0])
+			grid2 = np.linalg.norm(np.array([x,y]) - p_anchor[1])
+			grid3 = np.linalg.norm(np.array([x,y]) - p_anchor[2])
+			grid4 = np.linalg.norm(np.array([x,y]) - p_anchor[3])
+			err1 = d1[k] - grid1 if d1[k] >= grid1 else 0
+			err2 = d2[k] - grid2 if d2[k] >= grid2 else 0
+			err3 = d3[k] - grid3 if d3[k] >= grid3 else 0
+			err4 = d4[k] - grid4 if d4[k] >= grid4 else 0
+
+			p1 = lam1 * np.exp(-lam1 * (err1))
+			p2 = lam2 * np.exp(-lam2 * (err2))
+			p3 = lam3 * np.exp(-lam3 * (err3))
+			p4 = lam4 * np.exp(-lam4 * (err4))
+			# a[i,j] = lam1*np.exp(-lam1*(d1[0]-grid1))*lam2*np.exp(-lam2*(d2[0]-grid2))*lam3*np.exp(-lam3*(d3[0]-grid3))*lam4*np.exp(-lam4*(d3[0]-grid4))
+
+			a[i,j] = p1 * p2 * p3 * p4
+
+	l, m = np.unravel_index(a.argmax(), a.shape)
+	b[k] = [-5 + l * 0.05, -5 + m * 0.05]
+
+print(b, np.mean(b,axis=0))
+
 
 #perform estimation---------------------------------------
 #TODO
