@@ -279,7 +279,7 @@ for i,x in enumerate(np.linspace(-5,5,200)):
 		p3 = lam3 * np.exp(-lam3 * (err3))
 		p4 = lam4 * np.exp(-lam4 * (err4))
 
-		a[i,j] = p1 * p2 * p3 * p4
+		a[i,j] =  p1 * p2 * p3 * p4
 i,j = np.unravel_index(a.argmax(),a.shape)
 
 print((-5+i*0.05),(-5+j*0.05))
@@ -290,7 +290,57 @@ plt.contourf(np.linspace(-5,5,200),np.linspace(-5,5,200),a.T)
 plt.show()
 
 #1.4.2) ML-Estimator----------------------------------------------------------------------------------------------------
-num_samples = 20
+# num_samples = 2000
+# b = np.zeros((num_samples,2))
+# a = np.ones((200,200))
+# for k in range(num_samples):
+# 	for i,x in enumerate(np.linspace(-5,5,200)):
+# 		for j,y in enumerate(np.linspace(-5, 5, 200)):
+# 			grid1 = np.linalg.norm(np.array([x,y]) - p_anchor[0])
+# 			grid2 = np.linalg.norm(np.array([x,y]) - p_anchor[1])
+# 			grid3 = np.linalg.norm(np.array([x,y]) - p_anchor[2])
+# 			grid4 = np.linalg.norm(np.array([x,y]) - p_anchor[3])
+# 			err1 = d1[k] - grid1 if d1[k] >= grid1 else 0
+# 			err2 = d2[k] - grid2 if d2[k] >= grid2 else 0
+# 			err3 = d3[k] - grid3 if d3[k] >= grid3 else 0
+# 			err4 = d4[k] - grid4 if d4[k] >= grid4 else 0
+#
+# 			p1 = lam1 * np.exp(-lam1 * (err1))
+# 			p2 = lam2 * np.exp(-lam2 * (err2))
+# 			p3 = lam3 * np.exp(-lam3 * (err3))
+# 			p4 = lam4 * np.exp(-lam4 * (err4))
+# 			# a[i,j] = lam1*np.exp(-lam1*(d1[0]-grid1))*lam2*np.exp(-lam2*(d2[0]-grid2))*lam3*np.exp(-lam3*(d3[0]-grid3))*lam4*np.exp(-lam4*(d3[0]-grid4))
+#
+# 			a[i,j] = p1 * p2 * p3 * p4
+#
+# 	l, m = np.unravel_index(a.argmax(), a.shape)
+# 	b[k] = [-5 + l * 0.05, -5 + m * 0.05]
+#
+# print(b, np.mean(b,axis=0))
+# b = b.T
+# mu = list(map(np.mean, b))
+# cov = np.cov(b)
+#
+# plotGaussContour(mu, cov, np.min(b[0, :]), np.max(b[0, :]), np.min(b[1, :]),
+# 				 np.max(b[1, :]), 'hola')
+
+#perform estimation---------------------------------------
+#TODO
+
+#calculate error measures and create plots----------------
+#TODO
+
+#1.4.3) Bayesian Estimator----------------------------------------------------------------------------------------------
+
+#perform estimation---------------------------------------
+#TODO
+
+
+
+#calculate error measures and create plots----------------
+#TODO
+
+num_samples = 2000
 b = np.zeros((num_samples,2))
 a = np.ones((200,200))
 for k in range(num_samples):
@@ -305,32 +355,34 @@ for k in range(num_samples):
 			err3 = d3[k] - grid3 if d3[k] >= grid3 else 0
 			err4 = d4[k] - grid4 if d4[k] >= grid4 else 0
 
+			err1g = grid1 - truedist1
+			err2g = grid2 - truedist2
+			err3g = grid3 - truedist3
+			err4g = grid4 - truedist4
+
+			p1g = np.exp(-err1g/(2))/np.sqrt(2*np.pi)
+			p2g = np.exp(-err2g/(2))/np.sqrt(2*np.pi)
+			p3g = np.exp(-err3g/(2))/np.sqrt(2*np.pi)
+			p4g = np.exp(-err4g/(2))/np.sqrt(2*np.pi)
+
+
 			p1 = lam1 * np.exp(-lam1 * (err1))
 			p2 = lam2 * np.exp(-lam2 * (err2))
 			p3 = lam3 * np.exp(-lam3 * (err3))
 			p4 = lam4 * np.exp(-lam4 * (err4))
 			# a[i,j] = lam1*np.exp(-lam1*(d1[0]-grid1))*lam2*np.exp(-lam2*(d2[0]-grid2))*lam3*np.exp(-lam3*(d3[0]-grid3))*lam4*np.exp(-lam4*(d3[0]-grid4))
 
-			a[i,j] = p1 * p2 * p3 * p4
+
+			a[i,j] = ( p1 * p1g ) * ( p2 *  p2g ) * ( p3 * p3g ) * ( p4 * p4g )
 
 	l, m = np.unravel_index(a.argmax(), a.shape)
 	b[k] = [-5 + l * 0.05, -5 + m * 0.05]
 
 print(b, np.mean(b,axis=0))
+b = b.T
+mu = list(map(np.mean, b))
+cov = np.cov(b)
 
-
-#perform estimation---------------------------------------
-#TODO
-
-#calculate error measures and create plots----------------
-#TODO
-
-#1.4.3) Bayesian Estimator----------------------------------------------------------------------------------------------
-
-#perform estimation---------------------------------------
-#TODO
-
-#calculate error measures and create plots----------------
-#TODO
-
+plotGaussContour(mu, cov, np.min(b[0, :]), np.max(b[0, :]), np.min(b[1, :]),
+				 np.max(b[1, :]), 'hola')
 
