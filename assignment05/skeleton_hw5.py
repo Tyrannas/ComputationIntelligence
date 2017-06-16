@@ -163,25 +163,28 @@ def main():
     # 1.) EM algorithm for GMM:
     # TODO
     M = 5
-    for M in range(3,8):
-        alpha_0 = np.array([0.1,0.2,0.3,0.2,0.2])
-        mu_0 = np.random.random((M,2)) * [1000, 3000]
-        # mu_0 = [[10,1000],[500,1000],[800,1000],[300,2000],[600,2000]]
-        Sigma_0 = np.identity(M)
-        max_iter = 10
+    alpha_0 = np.array([0.1,0.2,0.3,0.2,0.2])
+    mu_0 = np.random.random((M,2)) * [1000, 3000]
+    Sigma_0 = np.identity(M)
+    max_iter = 10
 
-        # alpha, mu, Sigma, L =  EM(X[0].T, M, alpha_0, mu_0, Sigma_0, max_iter)
-        # print(alpha,mu,Sigma,L)
-        # 2.) K-means algorithm:
-        mu, D = k_means(X, M, mu_0, max_iter)
-        plot_kmeans_results(X, mu, D)
+    # alpha, mu, Sigma, L =  EM(X[0].T, M, alpha_0, mu_0, Sigma_0, max_iter)
+    # print(alpha,mu,Sigma,L)
+    # 
+    # 2.) K-means algorithm:
+    mu, D = k_means(X, M, mu_0, max_iter)
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    for index, data in enumerate([a, e, i, o, y]): 
+        plt.scatter(data[:,0], data[:,1], c=colors[index])
+    plt.show()
+    plot_kmeans_results(X, mu, D)
     # 3.) Sampling from GMM
     # TODO
 
     pass
 
 def plot_kmeans_results(X, mu, D):
-    colors = ['red', 'green', 'yellow', 'blue', 'orange', 'magenta', 'cyan']
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
     plt.plot(D)
     plt.show()
     c = [colors[np.argmin([np.linalg.norm(np.array(x) - np.array(m)) for m in mu])] for x in X]
