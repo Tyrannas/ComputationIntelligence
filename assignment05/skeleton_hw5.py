@@ -86,12 +86,14 @@ def likelihood_bivariate_normal(X, mu, cov):
 
 
 def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
-    # TODO
+
+    # Step 1, Init the parameters 
     alpha = alpha_0
     mu = mu_0
     sigma = Sigma_0
     L1 = 1000
     L = 0
+
     rm = np.zeros((M,20000))
     Nm = np.zeros(M,)
     P = np.zeros((M,20000 ))
@@ -121,7 +123,6 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
             sigma[j] = np.dot(rm[j]*d.T,d)/Nm[j]
 
 
-
         alpha = Nm/20000
 
         # sigma = sigma + 150
@@ -134,22 +135,32 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
         if np.abs(L1-L) > 0.00001:
             L1= L
         if np.abs(L1 - L) < 0.00001:
-            print('afsj')
             break
-    # j=0
-    # cl = [[[],[]],[[],[]],[[],[]],[[],[]],[[],[]]]
-    # for i in range(20000):
-    #     j = np.argmax(rm[:,i])
-    #     cl[j] += X[i,:]
-    # print(cl)
 
     return alpha,mu,sigma,L
 
 
 
 def k_means(X, M, mu_0, max_iter):
-    # TODO
-    pass
+    mu = mu_0
+    D = np.empty(max_iter)
+    # for every iteration
+    for it in range(max_iter):
+        mu_temp = [[] for i in range(M)]
+        # for every value
+        for x in X:
+            arr = []
+            # for every center in mu
+            for m in mu:
+                # lets compute the distance between the center and the value
+                arr.append(np.linalg.norm(np.array(x) - np.array(m)))
+            # store the minimum distance in D
+            D[it] += min(arr)
+            # store x in the center's array
+            mu_temp[np.argmin(arr)].append(x)
+        # update mu
+        mu = np.array([np.mean(m, axis=0) for m in mu_temp])
+    return mu, D
 
 
 def sample_GMM(alpha, mu, Sigma, N):
@@ -174,25 +185,33 @@ def main():
     alpha_0 = np.array([1/M for i in range(M)])
     mu_0 = np.random.uniform(200,3000,(M,2))
     Sigma_0 = 10000*np.array([np.identity(2) for i in range(M)])
-    max_iter = 100
+    max_iter = 10
 
 
     alpha, mu, Sigma, L =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
     print(alpha,mu,Sigma,L)
 
-    plt.scatter(a[:, 0], a[:,1])
-    plt.scatter(e[:, 0], e[:, 1])
-    plt.scatter(i[:, 0], X[:, 1])
-    plt.scatter(X[:, 0], X[:, 1])
-    plt.scatter(X[:, 0], X[:, 1])
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    for index, data in enumerate([a, e, i, o, y]):
+        plt.scatter(data[:, 0], data[:, 1], c=colors[index])
+
     for i in range(M):
-        plot_gauss_contour(mu[i],Sigma[i],0,1200,0,3000,"Sourmpinator")
+        plot_gauss_contour(mu[i],Sigma[i],0,1200,0,3000,"")
 
 
     plt.show()
 
     # 2.) K-means algorithm:
-    # TODO
+
+
+
+
+    mu, D = k_means(X, M, mu_0, max_iter)
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    for index, data in enumerate([a, e, i, o, y]): 
+        plt.scatter(data[:,0], data[:,1], c=colors[index])
+    plt.show()
+    plot_kmeans_results(X, mu, D)
 
 
     # 3.) Sampling from GMM
@@ -200,6 +219,14 @@ def main():
 
     pass
 
+def plot_kmeans_results(X, mu, D):
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    plt.plot(D)
+    plt.show()
+    c = [colors[np.argmin([np.linalg.norm(np.array(x) - np.array(m)) for m in mu])] for x in X]
+    plt.scatter(X[:,0], X[:,1], c=c)
+    plt.scatter(mu[:,0], mu[:,1], c='black')
+    plt.show()
 
 def sanity_checks():
     # likelihood_bivariate_normal
@@ -227,6 +254,5 @@ if __name__ == '__main__':
     # to make experiments replicable (you can change this, if you like)
     # rd.seed(2361317)
     
-    sanity_checks()
+    # sanity_checks()
     main()
-    

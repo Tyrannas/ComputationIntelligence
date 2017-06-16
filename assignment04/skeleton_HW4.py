@@ -157,104 +157,104 @@ print("lambda = ", lam1,lam2,lam3,lam4)
 
 
 
-#
-# #1.3) Least-Squares Estimation of the Position--------------------------------------------------------------------------
-# #1.3.2) writing the function LeastSquaresGN()...(not here but in this file)---------------------------------------------
-# #TODO
-#
-#
-# #1.3.3) evaluating the position estimation for all scenarios------------------------------------------------------------
-#
-# # choose parameters
-# tol = 0.01 # tolerance
-# maxIter = 4  # maximum number of iterations
-#
-# # store all N estimated positions
-#
-#
-# for scenario in range(1,4):
-# 	if(scenario == 1):
-# 		d1, d2, d3, d4 = import_data('HW4_1.data')
-# 	elif(scenario == 2):
-# 		d1, d2, d3, d4 = import_data('HW4_2.data')
-#
-# 	elif(scenario == 3):
-# 		d1, d2, d3, d4 = import_data('HW4_3.data')
-# 	# elif(scenario == 4):
-# 	# #scenario 2 without the exponential anchor
-# 	# 	d1, d2, d3, d4 = import_data('HW4_2.data')
-#
-# 	NrSamples = np.size(d1, 0)
-#
-# 	p_estimated = np.zeros((NrSamples, 2))
-# 	#perform estimation---------------------------------------
-# 	# #TODO
-#
-#
-#
-#
-#
-# 	for i in range(0, NrSamples):
-# 		dummy = i
-# 		p_estimated[i] = LeastSquareGN(p_anchor, [5 * np.random.random(), 5 * np.random.random()], np.array([d1[i],d2[i], d3[i], d4[i]]), maxIter, tol)
-# 	plt.figure(2)
-# 	plt.axis([-6, 6, -6, 6])
-# 	plt.plot(p_estimated[:, 0], p_estimated[:, 1], 'bo')
-# 	plt.show()
-#
-# 	# calculate error measures and create plots----------------
-# 	#TODO
-# 	p_estimated = np.transpose(p_estimated)
-# 	mu = list(map(np.mean,p_estimated))
-# 	cov = np.cov(p_estimated)
-#
-#
-# 	plotGaussContour(mu,cov, np.min(p_estimated[0,:]),np.max(p_estimated[0,:]),np.min(p_estimated[1,:]),np.max(p_estimated[1,:]),'hola')
-# 	# p_estimated = np.transpose(p_estimated)
-# 	error = p_estimated - p_true.T
-# 	Fx,x = ecdf(abs(error[0]))
-#
-# 	plt.plot(x,Fx)
-#
-# 	Fx,x = ecdf(abs(error[1]))
-# 	plt.plot(x,Fx)
-# 	plt.show()
-#
-#
-#
-#
-#
-#
-# d1, d2, d3, d4 = import_data('HW4_2.data')
-# NrSamples = np.size(d2, 0)
-#
-# p_estimated = np.zeros((NrSamples, 2))
-# for i in range(0, NrSamples):
-# 	dummy = i
-# 	p_estimated[i] = LeastSquareGN(p_anchor[1:4], [5 * np.random.random(), 5 * np.random.random()],
-# 								   np.array([ d2[i], d3[i], d4[i]]), maxIter, tol)
-# plt.figure(2)
-# plt.axis([-6, 6, -6, 6])
-# plt.plot(p_estimated[:, 0], p_estimated[:, 1], 'bo')
-# plt.show()
-#
-# # calculate error measures and create plots----------------
-# # TODO
+
+#1.3) Least-Squares Estimation of the Position--------------------------------------------------------------------------
+#1.3.2) writing the function LeastSquaresGN()...(not here but in this file)---------------------------------------------
+
+
+
+#1.3.3) evaluating the position estimation for all scenarios------------------------------------------------------------
+
+# choose parameters
+tol = 0.01 # tolerance
+maxIter = 4  # maximum number of iterations
+
+# store all N estimated positions
+
+
+for scenario in range(1,4):
+	if(scenario == 1):
+		d1, d2, d3, d4 = import_data('HW4_1.data')
+	elif(scenario == 2):
+		d1, d2, d3, d4 = import_data('HW4_2.data')
+
+	elif(scenario == 3):
+		d1, d2, d3, d4 = import_data('HW4_3.data')
+	# elif(scenario == 4):
+	# #scenario 2 without the exponential anchor
+	# 	d1, d2, d3, d4 = import_data('HW4_2.data')
+
+	NrSamples = np.size(d1, 0)
+
+	p_estimated = np.zeros((NrSamples, 2))
+	#perform estimation---------------------------------------
+	# #TODO
+
+
+
+
+
+	for i in range(0, NrSamples):
+		dummy = i
+		p_estimated[i] = LeastSquareGN(p_anchor, [5 * np.random.random(), 5 * np.random.random()], np.array([d1[i],d2[i], d3[i], d4[i]]), maxIter, tol)
+	plt.figure(2)
+	plt.axis([-6, 6, -6, 6])
+	plt.plot(p_estimated[:, 0], p_estimated[:, 1], 'bo')
+	plt.show()
+
+	# calculate error measures and create plots----------------
+	#TODO
+	p_estimated = np.transpose(p_estimated)
+	mu = list(map(np.mean,p_estimated))
+	cov = np.cov(p_estimated)
+	print(mu,list(map(np.var,p_estimated)))
+
+	plotGaussContour(mu,cov, np.min(p_estimated[0,:]),np.max(p_estimated[0,:]),np.min(p_estimated[1,:]),np.max(p_estimated[1,:]),"")
+	# p_estimated = np.transpose(p_estimated)
+	error = p_estimated - p_true.T
+	Fx,x = ecdf(abs(error[0]))
+
+	plt.plot(x,Fx)
+
+	Fx,x = ecdf(abs(error[1]))
+	plt.plot(x,Fx)
+	plt.show()
+
+
+
+
+
+
+d1, d2, d3, d4 = import_data('HW4_2.data')
+NrSamples = np.size(d2, 0)
+
+p_estimated = np.zeros((NrSamples, 2))
+for i in range(0, NrSamples):
+	dummy = i
+	p_estimated[i] = LeastSquareGN(p_anchor[1:4], [5 * np.random.random(), 5 * np.random.random()],
+								   np.array([ d2[i], d3[i], d4[i]]), maxIter, tol)
+plt.figure(2)
+plt.axis([-6, 6, -6, 6])
+plt.plot(p_estimated[:, 0], p_estimated[:, 1], 'bo')
+plt.show()
+
+# calculate error measures and create plots----------------
+# TODO
+p_estimated = np.transpose(p_estimated)
+mu = list(map(np.mean, p_estimated))
+cov = np.cov(p_estimated)
+print(mu,list(map(np.var,p_estimated)))
+plotGaussContour(mu, cov, np.min(p_estimated[0, :]), np.max(p_estimated[0, :]), np.min(p_estimated[1, :]),
+				 np.max(p_estimated[1, :]), 'hola')
 # p_estimated = np.transpose(p_estimated)
-# mu = list(map(np.mean, p_estimated))
-# cov = np.cov(p_estimated)
-#
-# plotGaussContour(mu, cov, np.min(p_estimated[0, :]), np.max(p_estimated[0, :]), np.min(p_estimated[1, :]),
-# 				 np.max(p_estimated[1, :]), 'hola')
-# # p_estimated = np.transpose(p_estimated)
-# error = p_estimated - p_true.T
-# Fx, x = ecdf(abs(error[0]))
-#
-# plt.plot(x, Fx)
-#
-# Fx, x = ecdf(abs(error[1]))
-# plt.plot(x, Fx)
-# plt.show()
+error = p_estimated - p_true.T
+Fx, x = ecdf(abs(error[0]))
+
+plt.plot(x, Fx)
+
+Fx, x = ecdf(abs(error[1]))
+plt.plot(x, Fx)
+plt.show()
 
 #1.4) Numerical Maximum-Likelihood Estimation of the Position (scenario 3)----------------------------------------------
 #1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
@@ -289,40 +289,40 @@ print((-5+i*0.05),(-5+j*0.05))
 plt.contourf(np.linspace(-5,5,200),np.linspace(-5,5,200),a.T)
 plt.show()
 
-#1.4.2) ML-Estimator----------------------------------------------------------------------------------------------------
-# num_samples = 2000
-# b = np.zeros((num_samples,2))
-# a = np.ones((200,200))
-# for k in range(num_samples):
-# 	for i,x in enumerate(np.linspace(-5,5,200)):
-# 		for j,y in enumerate(np.linspace(-5, 5, 200)):
-# 			grid1 = np.linalg.norm(np.array([x,y]) - p_anchor[0])
-# 			grid2 = np.linalg.norm(np.array([x,y]) - p_anchor[1])
-# 			grid3 = np.linalg.norm(np.array([x,y]) - p_anchor[2])
-# 			grid4 = np.linalg.norm(np.array([x,y]) - p_anchor[3])
-# 			err1 = d1[k] - grid1 if d1[k] >= grid1 else 0
-# 			err2 = d2[k] - grid2 if d2[k] >= grid2 else 0
-# 			err3 = d3[k] - grid3 if d3[k] >= grid3 else 0
-# 			err4 = d4[k] - grid4 if d4[k] >= grid4 else 0
-#
-# 			p1 = lam1 * np.exp(-lam1 * (err1))
-# 			p2 = lam2 * np.exp(-lam2 * (err2))
-# 			p3 = lam3 * np.exp(-lam3 * (err3))
-# 			p4 = lam4 * np.exp(-lam4 * (err4))
-# 			# a[i,j] = lam1*np.exp(-lam1*(d1[0]-grid1))*lam2*np.exp(-lam2*(d2[0]-grid2))*lam3*np.exp(-lam3*(d3[0]-grid3))*lam4*np.exp(-lam4*(d3[0]-grid4))
-#
-# 			a[i,j] = p1 * p2 * p3 * p4
-#
-# 	l, m = np.unravel_index(a.argmax(), a.shape)
-# 	b[k] = [-5 + l * 0.05, -5 + m * 0.05]
-#
-# print(b, np.mean(b,axis=0))
-# b = b.T
-# mu = list(map(np.mean, b))
-# cov = np.cov(b)
-#
-# plotGaussContour(mu, cov, np.min(b[0, :]), np.max(b[0, :]), np.min(b[1, :]),
-# 				 np.max(b[1, :]), 'hola')
+# 1.4.2) ML-Estimator----------------------------------------------------------------------------------------------------
+num_samples = 2000
+b = np.zeros((num_samples,2))
+a = np.ones((200,200))
+for k in range(num_samples):
+	for i,x in enumerate(np.linspace(-5,5,200)):
+		for j,y in enumerate(np.linspace(-5, 5, 200)):
+			grid1 = np.linalg.norm(np.array([x,y]) - p_anchor[0])
+			grid2 = np.linalg.norm(np.array([x,y]) - p_anchor[1])
+			grid3 = np.linalg.norm(np.array([x,y]) - p_anchor[2])
+			grid4 = np.linalg.norm(np.array([x,y]) - p_anchor[3])
+			err1 = d1[k] - grid1 if d1[k] >= grid1 else 0
+			err2 = d2[k] - grid2 if d2[k] >= grid2 else 0
+			err3 = d3[k] - grid3 if d3[k] >= grid3 else 0
+			err4 = d4[k] - grid4 if d4[k] >= grid4 else 0
+
+			p1 = lam1 * np.exp(-lam1 * (err1))
+			p2 = lam2 * np.exp(-lam2 * (err2))
+			p3 = lam3 * np.exp(-lam3 * (err3))
+			p4 = lam4 * np.exp(-lam4 * (err4))
+			# a[i,j] = lam1*np.exp(-lam1*(d1[0]-grid1))*lam2*np.exp(-lam2*(d2[0]-grid2))*lam3*np.exp(-lam3*(d3[0]-grid3))*lam4*np.exp(-lam4*(d3[0]-grid4))
+
+			a[i,j] = p1 * p2 * p3 * p4
+
+	l, m = np.unravel_index(a.argmax(), a.shape)
+	b[k] = [-5 + l * 0.05, -5 + m * 0.05]
+
+print(np.mean(b,axis=0))
+b = b.T
+mu = list(map(np.mean, b))
+cov = np.cov(b)
+
+plotGaussContour(mu, cov, np.min(b[0, :]), np.max(b[0, :]), np.min(b[1, :]),
+				 np.max(b[1, :]), 'hola')
 
 #perform estimation---------------------------------------
 #TODO
@@ -378,7 +378,7 @@ for k in range(num_samples):
 	l, m = np.unravel_index(a.argmax(), a.shape)
 	b[k] = [-5 + l * 0.05, -5 + m * 0.05]
 
-print(b, np.mean(b,axis=0))
+print(np.mean(b,axis=0))
 b = b.T
 mu = list(map(np.mean, b))
 cov = np.cov(b)
