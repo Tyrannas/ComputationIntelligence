@@ -64,7 +64,6 @@ def plot_gauss_contour(mu, cov, xmin, xmax, ymin, ymax, title):
     CS = plt.contour(X, Y, Z)
     plt.clabel(CS, inline = 1, fontsize = 10)
     plt.title(title)
-    plt.show()
 
 
 def likelihood_bivariate_normal(X, mu, cov):
@@ -93,31 +92,59 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
     sigma = Sigma_0
     L1 = 1000
     L = 0
+    rm = np.zeros((M,20000))
+    Nm = np.zeros(M,)
+    P = np.zeros((M,20000 ))
     for i in range(max_iter):
 
-        rm1 = alpha*multivariate_normal(mu, sigma).pdf(X)
-        rm = rm1/(np.sum(rm1))
+        for j in range(M):
 
-        print(np.shape(rm1))
-        Nm = np.sum(rm)
-        mu = 1/Nm*np.dot(rm,X)
-
-        sigma = 1/Nm*np.dot(np.dot(rm,(X-mu)),(X-mu).T)
-
-        alpha = Nm/len(X)
-        print(np.shape(sigma),np.shape(alpha),np.shape(mu))
-
-        sigmainv = np.invert(sigma)
+            rm[j] = alpha[j]*multivariate_normal(mu[j], sigma[j]).pdf(X)
 
 
-        L = np.sum(np.log(alpha*multivariate_normal(mu, sigma).pdf(X)))
-        if np.abs(L1-L) < 0.1:
+
+
+
+        rm = rm/(np.sum(rm))
+        for j in range(M):
+
+            Nm[j] = np.sum(rm[j])
+
+
+        for j in range(M):
+
+            mu[j] = np.dot(rm[j],X)/Nm[j]
+
+
+        for j in range(M):
+            d = X - mu[j]
+            sigma[j] = np.dot(rm[j]*d.T,d)/Nm[j]
+
+
+
+        alpha = Nm/20000
+
+        # sigma = sigma + 150
+        for j in range(M):
+            P[j] = alpha[j]*multivariate_normal(mu[j], sigma[j]).pdf(X)
+        L = np.log(np.sum(P))
+
+        print(L)
+
+        if np.abs(L1-L) > 0.00001:
+            L1= L
+        if np.abs(L1 - L) < 0.00001:
+            print('afsj')
             break
+    # j=0
+    # cl = [[[],[]],[[],[]],[[],[]],[[],[]],[[],[]]]
+    # for i in range(20000):
+    #     j = np.argmax(rm[:,i])
+    #     cl[j] += X[i,:]
+    # print(cl)
+
     return alpha,mu,sigma,L
 
-
-def normal(X,sigma,mu,sigmainv,d):
-    return np.exp(-0.5*np.dot(np.dot(d,sigmainv),(X-mu)))/np.sqrt(2*pi*np.linalg.norm(sigma))
 
 
 def k_means(X, M, mu_0, max_iter):
@@ -142,13 +169,28 @@ def main():
     # 1.) EM algorithm for GMM:
     # TODO
     M = 5
-    alpha_0 = np.array([0.1,0.2,0.3,0.2,0.2])
-    mu_0 = np.random.random((5,))
-    Sigma_0 = np.identity(M)
-    max_iter = 10
 
-    alpha, mu, Sigma, L =  EM(X[0].T, M, alpha_0, mu_0, Sigma_0, max_iter)
+    X = np.array(X)
+    alpha_0 = np.array([1/M for i in range(M)])
+    mu_0 = np.random.uniform(200,3000,(M,2))
+    Sigma_0 = 10000*np.array([np.identity(2) for i in range(M)])
+    max_iter = 100
+
+
+    alpha, mu, Sigma, L =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
     print(alpha,mu,Sigma,L)
+
+    plt.scatter(a[:, 0], a[:,1])
+    plt.scatter(e[:, 0], e[:, 1])
+    plt.scatter(i[:, 0], X[:, 1])
+    plt.scatter(X[:, 0], X[:, 1])
+    plt.scatter(X[:, 0], X[:, 1])
+    for i in range(M):
+        plot_gauss_contour(mu[i],Sigma[i],0,1200,0,3000,"Sourmpinator")
+
+
+    plt.show()
+
     # 2.) K-means algorithm:
     # TODO
 
@@ -183,7 +225,7 @@ def sanity_checks():
 
 if __name__ == '__main__':
     # to make experiments replicable (you can change this, if you like)
-    rd.seed(23434345)
+    # rd.seed(2361317)
     
     sanity_checks()
     main()
