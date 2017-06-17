@@ -40,7 +40,7 @@ def sample_discrete_pmf(X, PM, N):
 
 
 
-def plot_gauss_contour(mu, cov, xmin, xmax, ymin, ymax, title):
+def plot_gauss_contour(mu, cov, xmin, xmax, ymin, ymax):
     """Show contour plot for bivariate Gaussian with given mu and cov in the range specified.
 
     mu ... mean -- [mu1, mu2]
@@ -63,7 +63,7 @@ def plot_gauss_contour(mu, cov, xmin, xmax, ymin, ymax, title):
     plt.plot([mu[0]], [mu[1]], 'r+') # plot the mean as a single point
     CS = plt.contour(X, Y, Z)
     plt.clabel(CS, inline = 1, fontsize = 10)
-    plt.title(title)
+    # plt.title(title)
 
 
 def likelihood_bivariate_normal(X, mu, cov):
@@ -91,23 +91,24 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
     alpha = alpha_0
     mu = mu_0
     sigma = Sigma_0
-    L1 = 1000
-    L = 0
-
-    rm = np.zeros((M,20000))
+    L1 = 10000
+    L = []
+    prob = np.zeros((M, 20000))
+    rm = np.zeros((M, 20000))
     Nm = np.zeros(M,)
     P = np.zeros((M,20000 ))
+    softclass = np.zeros((20000,))
     for i in range(max_iter):
 
         for j in range(M):
 
-            rm[j] = alpha[j]*multivariate_normal(mu[j], sigma[j]).pdf(X)
+            prob[j] = alpha[j]*multivariate_normal(mu[j], sigma[j]).pdf(X)
+
+
+        rm = prob/(np.sum(prob,axis = 0))
 
 
 
-
-
-        rm = rm/(np.sum(rm))
         for j in range(M):
 
             Nm[j] = np.sum(rm[j])
@@ -124,20 +125,21 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
 
 
         alpha = Nm/20000
-
-        # sigma = sigma + 150
+        # sigma = sigma + [[50,0],[0,50]]
         for j in range(M):
             P[j] = alpha[j]*multivariate_normal(mu[j], sigma[j]).pdf(X)
-        L = np.log(np.sum(P))
+        L += [np.log(np.sum(P))]
 
-        print(L)
 
-        if np.abs(L1-L) > 0.00001:
-            L1= L
-        if np.abs(L1 - L) < 0.00001:
+        if np.abs(L1-L[i]) > 0.000001:
+            L1= L[i]
+        else:
+            # print(i)
             break
+    # question 6
+    softclass = np.argmax(rm, axis=0)
 
-    return alpha,mu,sigma,L
+    return alpha,mu,sigma,L,softclass
 
 
 
@@ -185,31 +187,67 @@ def main():
     alpha_0 = np.array([1/M for i in range(M)])
     mu_0 = np.random.uniform(200,3000,(M,2))
     Sigma_0 = 10000*np.array([np.identity(2) for i in range(M)])
-    max_iter = 10
+    max_iter = 1000
+    # Question 5
+    # Sigma_0 = [[100000,5000],[5000,100000]] * np.array([np.abs(np.random.random((2,2))) for i in range(M)])
+    alpha, mu, Sigma, L , softclass =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
 
 
-    alpha, mu, Sigma, L =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
-    print(alpha,mu,Sigma,L)
+    # Question  4
+    plt.figure(1)
+    plt.plot(L)
+    plt.show()
 
+    # Question 2, 3, 5
+    plt.figure(2)
     colors = ['red', 'green', 'yellow', 'blue', 'orange']
     for index, data in enumerate([a, e, i, o, y]):
         plt.scatter(data[:, 0], data[:, 1], c=colors[index])
 
-    for i in range(M):
-        plot_gauss_contour(mu[i],Sigma[i],0,1200,0,3000,"")
-
+    for j in range(M):
+        plot_gauss_contour(mu[j],Sigma[j],0,1200,0,3000)
 
     plt.show()
 
-    # 2.) K-means algorithm:
+    # # Question 6
+    # plt.figure(3)
+    # a1 = []
+    # b1 = []
+    # c1 = []
+    # d1 = []
+    # e1 = []
+    # for i, clas in enumerate(softclass):
+    #     if clas == 0:
+    #         a1 += [list(X[i])]
+    #     elif clas == 1:
+    #         b1 += [list(X[i])]
+    #     elif clas == 2:
+    #         c1 += [list(X[i])]
+    #     elif clas == 3:
+    #         d1 += [list(X[i])]
+    #     elif clas == 4:
+    #         e1 += [list(X[i])]
+    # a1 = np.array(a1)
+    # b1 = np.array(b1)
+    # c1 = np.array(c1)
+    # d1 = np.array(d1)
+    # e1 = np.array(e1)
+    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    # for index, data in enumerate([a1, b1, c1, d1,  e1]):
+    #     plt.scatter(data[:,0], data[:,1], c=colors[index])
+    # plt.show()
+
+        # 2.) K-means algorithm:
+    max_iter = 10
 
 
-
-
+    plt.figure(4)
     mu, D = k_means(X, M, mu_0, max_iter)
     colors = ['red', 'green', 'yellow', 'blue', 'orange']
-    for index, data in enumerate([a, e, i, o, y]): 
+
+    for index, data in enumerate([a, e, i, o, y]):
         plt.scatter(data[:,0], data[:,1], c=colors[index])
+
     plt.show()
     plot_kmeans_results(X, mu, D)
 
@@ -252,7 +290,8 @@ def sanity_checks():
 
 if __name__ == '__main__':
     # to make experiments replicable (you can change this, if you like)
-    # rd.seed(2361317)
-    
+    rd.seed(1)
+    # rd.seed(233151758)
+
     # sanity_checks()
     main()
