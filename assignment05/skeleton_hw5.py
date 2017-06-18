@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import math
 from math import pi, exp
 from scipy.stats import multivariate_normal
+import warnings
 
 
 ## -------------------------------------------------------    
@@ -148,7 +149,7 @@ def k_means(X, M, mu_0, max_iter):
     D = np.empty(max_iter)
     # for every iteration
     for it in range(max_iter):
-        mu_temp = [[] for i in range(M)]
+        mu_temp = [[X[0]] for i in range(M)] # intial regularization
         # for every value
         for x in X:
             arr = []
@@ -156,18 +157,24 @@ def k_means(X, M, mu_0, max_iter):
             for m in mu:
                 # lets compute the distance between the center and the value
                 arr.append(np.linalg.norm(np.array(x) - np.array(m)))
+
             # store the minimum distance in D
             D[it] += min(arr)
             # store x in the center's array
+
             mu_temp[np.argmin(arr)].append(x)
         # update mu
         mu = np.array([np.mean(m, axis=0) for m in mu_temp])
+
     return mu, D
 
 
-def sample_GMM(alpha, mu, Sigma, N):
+def sample_GMM(alpha, mu, Sigma, N,X):
     # TODO
-    pass
+    PM = [multivariate_normal(mu[0], Sigma[0]).pdf(mu[0]+(45000*N/2-i)*np.array([0.005,0.005])) for i in range(45000*N)]
+    print(PM,np.sum(PM))
+    y = sample_discrete_pmf(X, PM, N)
+    return y
 
 
 def main():
@@ -188,29 +195,26 @@ def main():
     mu_0 = np.random.uniform(200,3000,(M,2))
     Sigma_0 = 10000*np.array([np.identity(2) for i in range(M)])
     max_iter = 1000
-    # Question 5
-    # Sigma_0 = [[100000,5000],[5000,100000]] * np.array([np.abs(np.random.random((2,2))) for i in range(M)])
-    alpha, mu, Sigma, L , softclass =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
-
-
-    # Question  4
-    plt.figure(1)
-    plt.plot(L)
-    plt.show()
-
-    # Question 2, 3, 5
-    plt.figure(2)
-    colors = ['red', 'green', 'yellow', 'blue', 'orange']
-    for index, data in enumerate([a, e, i, o, y]):
-        plt.scatter(data[:, 0], data[:, 1], c=colors[index])
-
-    for j in range(M):
-        plot_gauss_contour(mu[j],Sigma[j],0,1200,0,3000)
-
-    plt.show()
+    # # Question 5
+    # # Sigma_0 = [[100000,5000],[5000,100000]] * np.array([np.abs(np.random.random((2,2))) for i in range(M)])
+    # alpha, mu, Sigma, L , softclass =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
+    #
+    #
+    # # Question  4
+    # plt.plot(L)
+    # plt.show()
+    #
+    # # Question 2, 3, 5
+    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    # for index, data in enumerate([a, e, i, o, y]):
+    #     plt.scatter(data[:, 0], data[:, 1], c=colors[index])
+    #
+    # for j in range(M):
+    #     plot_gauss_contour(mu[j],Sigma[j],0,1200,0,3000)
+    #
+    # plt.show()
 
     # # Question 6
-    # plt.figure(3)
     # a1 = []
     # b1 = []
     # c1 = []
@@ -238,23 +242,47 @@ def main():
     # plt.show()
 
         # 2.) K-means algorithm:
-    max_iter = 10
-
-
-    plt.figure(4)
-    mu, D = k_means(X, M, mu_0, max_iter)
-    colors = ['red', 'green', 'yellow', 'blue', 'orange']
-
-    for index, data in enumerate([a, e, i, o, y]):
-        plt.scatter(data[:,0], data[:,1], c=colors[index])
-
-    plt.show()
-    plot_kmeans_results(X, mu, D)
+    # max_iter = 10
+    #
+    #
+    # mu, D = k_means(X, M, mu_0, max_iter)
+    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    #
+    #
+    #
+    # for index, data in enumerate([a, e, i, o, y]):
+    #     plt.scatter(data[:,0], data[:,1], c=colors[index])
+    #
+    # plt.show()
+    # plot_kmeans_results(X, mu, D)
+    #
+    #
+    #
+    #
+    # #Using as initial mean values the result from k-means
+    # max_iter = 1000
+    #
+    # alpha, mu, Sigma, L, softclass = EM(X, M, alpha_0, mu, Sigma_0, max_iter)
+    # plt.plot(L)
+    # plt.show()
+    #
+    # # Question 2, 3, 5
+    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    # for index, data in enumerate([a, e, i, o, y]):
+    #     plt.scatter(data[:, 0], data[:, 1], c=colors[index])
+    #
+    # for j in range(M):
+    #     plot_gauss_contour(mu[j], Sigma[j], 0, 1200, 0, 3000)
+    #
+    # plt.show()
 
 
     # 3.) Sampling from GMM
     # TODO
 
+
+    y = sample_GMM(alpha_0,mu_0,Sigma_0,5,X)
+    plt.scatter(y[:, 0], y[:, 1])
     pass
 
 def plot_kmeans_results(X, mu, D):
@@ -290,7 +318,7 @@ def sanity_checks():
 
 if __name__ == '__main__':
     # to make experiments replicable (you can change this, if you like)
-    rd.seed(1)
+    # rd.seed(1)
     # rd.seed(233151758)
 
     # sanity_checks()
