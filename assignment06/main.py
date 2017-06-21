@@ -73,16 +73,39 @@ class HMM:
 
         X ... Observation sequence -- (N,)
         """
-
-        X = np.asarray(X)
-
+        # init the variables 
+        # observations
+        X       = np.asarray(X)
+        n_obs   = len(X)
+        # probabilities of the most likely path
+        probs   = np.zeros((self.N_s, n_obs))
+        # most likely path
+        path    = np.zeros((self.N_s, n_obs))
         # q_opt is the optimal state sequence; this is a default value
-        q_opt = np.array([0, 0, 1, 2])
+        q_opt   = np.zeros(n_obs, dtype=int)
 
-        # TODO: implement Viterbi algorithm
+        # values for initial state
+        probs[:,0] = self.pi.T * self.B[:, X[0]]
+        path[:, 0] = probs[:, 0].argmax()
+
+        # for every other observation 
+        for o in range(1, n_obs):
+            # for every state
+            for s in range(self.N_s):
+                # compute the probability of the transition
+                trans_prob = np.array(probs[:, o - 1] * self.A[:, s])
+                # get the highest probability
+                probs[s, o] = self.B[s, X[o]] * trans_prob.max()
+                # get the state with highest probability
+                path[s, o] = trans_prob.argmax()
+
+        # we then start from the end with the state with maximum probability
+        q_opt[n_obs - 1] = probs[:, n_obs - 1].argmax()
+        # then getting back to zero
+        for o in range(n_obs - 1, 0, -1):
+            q_opt[o - 1] = path[q_opt[o], o]
 
         return q_opt
-
 
     def sample(self, N):
         """Draw a random state and corresponding observation sequence of length N from the model."""
@@ -120,6 +143,7 @@ def main():
     hmm2 = HMM(A1, B1, pi2)
 
     # define observation sequences
+    X_test = np.array([0, 0, 0, 0, 0, 0,])
     X1 = np.array([0, 0, 1, 1, 1, 0])    # 0 = umbrella
     X2 = np.array([0, 0, 1, 1, 1, 0, 0]) # 1 = no umbrella
 
@@ -129,6 +153,7 @@ def main():
 
     # --- example usage of viterbi_discrete:
     optimal_state_sequence = hmm1.viterbi_discrete(X1)
+    optimal_state_sequence = hmm1.viterbi_discrete(X2)
     
     print(optimal_state_sequence)
     print([states[i] for i in optimal_state_sequence])
