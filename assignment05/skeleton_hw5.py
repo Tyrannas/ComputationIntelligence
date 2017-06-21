@@ -126,7 +126,7 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
 
 
         alpha = Nm/20000
-        # sigma = sigma + [[50,0],[0,50]]
+        sigma = sigma + [[50,0],[0,50]]
         for j in range(M):
             P[j] = alpha[j]*multivariate_normal(mu[j], sigma[j]).pdf(X)
         L += [np.log(np.sum(P))]
@@ -195,95 +195,96 @@ def main():
     mu_0 = np.random.uniform(200,3000,(M,2))
     Sigma_0 = 10000*np.array([np.identity(2) for i in range(M)])
     max_iter = 1000
-    # # Question 5
-    # # Sigma_0 = [[100000,5000],[5000,100000]] * np.array([np.abs(np.random.random((2,2))) for i in range(M)])
-    # alpha, mu, Sigma, L , softclass =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
-    #
-    #
-    # # Question  4
-    # plt.plot(L)
-    # plt.show()
-    #
-    # # Question 2, 3, 5
-    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
-    # for index, data in enumerate([a, e, i, o, y]):
-    #     plt.scatter(data[:, 0], data[:, 1], c=colors[index])
-    #
-    # for j in range(M):
-    #     plot_gauss_contour(mu[j],Sigma[j],0,1200,0,3000)
-    #
-    # plt.show()
-
-    # # Question 6
-    # a1 = []
-    # b1 = []
-    # c1 = []
-    # d1 = []
-    # e1 = []
-    # for i, clas in enumerate(softclass):
-    #     if clas == 0:
-    #         a1 += [list(X[i])]
-    #     elif clas == 1:
-    #         b1 += [list(X[i])]
-    #     elif clas == 2:
-    #         c1 += [list(X[i])]
-    #     elif clas == 3:
-    #         d1 += [list(X[i])]
-    #     elif clas == 4:
-    #         e1 += [list(X[i])]
-    # a1 = np.array(a1)
-    # b1 = np.array(b1)
-    # c1 = np.array(c1)
-    # d1 = np.array(d1)
-    # e1 = np.array(e1)
-    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
-    # for index, data in enumerate([a1, b1, c1, d1,  e1]):
-    #     plt.scatter(data[:,0], data[:,1], c=colors[index])
-    # plt.show()
-
-        # 2.) K-means algorithm:
-    # max_iter = 10
-    #
-    #
-    # mu, D = k_means(X, M, mu_0, max_iter)
-    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
-    #
-    #
-    #
-    # for index, data in enumerate([a, e, i, o, y]):
-    #     plt.scatter(data[:,0], data[:,1], c=colors[index])
-    #
-    # plt.show()
-    # plot_kmeans_results(X, mu, D)
-    #
-    #
-    #
-    #
-    # #Using as initial mean values the result from k-means
-    # max_iter = 1000
-    #
-    # alpha, mu, Sigma, L, softclass = EM(X, M, alpha_0, mu, Sigma_0, max_iter)
-    # plt.plot(L)
-    # plt.show()
-    #
-    # # Question 2, 3, 5
-    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
-    # for index, data in enumerate([a, e, i, o, y]):
-    #     plt.scatter(data[:, 0], data[:, 1], c=colors[index])
-    #
-    # for j in range(M):
-    #     plot_gauss_contour(mu[j], Sigma[j], 0, 1200, 0, 3000)
-    #
-    # plt.show()
+    # Question 5
+    # Sigma_0 = [[100000,5000],[5000,100000]] * np.array([np.abs(np.random.random((2,2))) for i in range(M)])
+    alpha, mu, Sigma, L , softclass =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
 
 
-    # 3.) Sampling from GMM
-    # TODO
+    # Question  4
+    plt.plot(L)
+    plt.show()
+
+    # Question 2, 3, 5
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    for index, data in enumerate([a, e, i, o, y]):
+        plt.scatter(data[:, 0], data[:, 1], c=colors[index])
+
+    for j in range(M):
+        plot_gauss_contour(mu[j],Sigma[j],0,1200,0,3000)
+
+    plt.show()
+
+    # Question 6
+    a1 = [list(X[0])]
+    b1 = [list(X[0])]
+    c1 = [list(X[0])]
+    d1 = [list(X[0])]
+    e1 = [list(X[0])]
+    for j, clas in enumerate(softclass):
+        if clas == 0:
+            a1 += [list(X[j])]
+        elif clas == 1:
+            b1 += [list(X[j])]
+        elif clas == 2:
+            c1 += [list(X[j])]
+        elif clas == 3:
+            d1 += [list(X[j])]
+        elif clas == 4:
+            e1 += [list(X[j])]
+    a1 = np.array(a1)
+    b1 = np.array(b1)
+    c1 = np.array(c1)
+    d1 = np.array(d1)
+    e1 = np.array(e1)
+
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
+
+    for index, data in enumerate([a1, b1, c1, d1,  e1]):
+        plt.scatter(data[:,0], data[:,1], c=colors[index])
+    plt.show()
+
+    # 2.) K-means algorithm:
+    max_iter = 10
 
 
-    y = sample_GMM(alpha_0,mu_0,Sigma_0,5,X)
-    plt.scatter(y[:, 0], y[:, 1])
-    pass
+    mu, D = k_means(X, M, mu_0, max_iter)
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
+
+
+    for index, data in enumerate([a, e, i, o, y]):
+        plt.scatter(data[:,0], data[:,1], c=colors[index])
+
+    plt.show()
+    plot_kmeans_results(X, mu, D)
+
+
+
+
+    #Using as initial mean values the result from k-means
+    max_iter = 1000
+
+    alpha, mu, Sigma, L, softclass = EM(X, M, alpha_0, mu, Sigma_0, max_iter)
+    plt.plot(L)
+    plt.show()
+
+    # Question 2, 3, 5
+    colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    for index, data in enumerate([a, e, i, o, y]):
+        plt.scatter(data[:, 0], data[:, 1], c=colors[index])
+
+    for j in range(M):
+        plot_gauss_contour(mu[j], Sigma[j], 0, 1200, 0, 3000)
+
+    plt.show()
+
+
+    # # 3.) Sampling from GMM
+    # # TODO
+    #
+    #
+    # y = sample_GMM(alpha_0,mu_0,Sigma_0,5,X)
+    # plt.scatter(y[:, 0], y[:, 1])
+    # pass
 
 def plot_kmeans_results(X, mu, D):
     colors = ['red', 'green', 'yellow', 'blue', 'orange']
