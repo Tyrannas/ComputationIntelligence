@@ -11,7 +11,7 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import math
 from math import pi, exp
-from scipy.stats import multivariate_normal
+from scipy.stats import multivariate_normal, norm
 
 
 ## -------------------------------------------------------    
@@ -85,6 +85,7 @@ def likelihood_bivariate_normal(X, mu, cov):
 ## -------------------------------------------------------
 
 
+
 def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
 
     # Step 1, Init the parameters 
@@ -103,24 +104,20 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
 
             rm[j] = alpha[j]*multivariate_normal(mu[j], sigma[j]).pdf(X)
 
-
-
-
-
         rm = rm/(np.sum(rm))
+        print(rm)
+        if i == max_iter - 1:
+            print('dksokdoq')
+            plot_EM_results(X, rm)
+
         for j in range(M):
 
             Nm[j] = np.sum(rm[j])
 
-
-        for j in range(M):
-
             mu[j] = np.dot(rm[j],X)/Nm[j]
 
-
-        for j in range(M):
             d = X - mu[j]
-            sigma[j] = np.dot(rm[j]*d.T,d)/Nm[j]
+            # sigma[j] = np.dot(rm[j] * d, d.T) / Nm[j]
 
 
         alpha = Nm/20000
@@ -130,12 +127,10 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
             P[j] = alpha[j]*multivariate_normal(mu[j], sigma[j]).pdf(X)
         L = np.log(np.sum(P))
 
-        print(L)
-
-        if np.abs(L1-L) > 0.00001:
-            L1= L
-        if np.abs(L1 - L) < 0.00001:
-            break
+        # if np.abs(L1-L) > 0.00001:
+        #     L1= L
+        # if np.abs(L1 - L) < 0.00001:
+        #     break
 
     return alpha,mu,sigma,L
 
@@ -189,7 +184,6 @@ def main():
 
 
     alpha, mu, Sigma, L =  EM(X, M, alpha_0, mu_0, Sigma_0, max_iter)
-    print(alpha,mu,Sigma,L)
 
     colors = ['red', 'green', 'yellow', 'blue', 'orange']
     for index, data in enumerate([a, e, i, o, y]):
@@ -206,12 +200,11 @@ def main():
 
 
 
-    mu, D = k_means(X, M, mu_0, max_iter)
-    colors = ['red', 'green', 'yellow', 'blue', 'orange']
-    for index, data in enumerate([a, e, i, o, y]): 
-        plt.scatter(data[:,0], data[:,1], c=colors[index])
-    plt.show()
-    plot_kmeans_results(X, mu, D)
+    # mu, D = k_means(X, M, mu_0, max_iter)
+    # colors = ['red', 'green', 'yellow', 'blue', 'orange']
+    
+    # plt.show()
+    # plot_kmeans_results(X, mu, D)
 
 
     # 3.) Sampling from GMM
@@ -227,6 +220,9 @@ def plot_kmeans_results(X, mu, D):
     plt.scatter(X[:,0], X[:,1], c=c)
     plt.scatter(mu[:,0], mu[:,1], c='black')
     plt.show()
+
+def plot_EM_results(X, rm):
+    print(rm)
 
 def sanity_checks():
     # likelihood_bivariate_normal
