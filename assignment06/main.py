@@ -120,7 +120,11 @@ class HMM:
     def sample(self, N):
         """Draw a random state and corresponding observation sequence of length N from the model."""
         # TODO: implement sampling from HMM
-        pass
+        PM = [1./N for i in range(N)]
+        X = [np.random.randint(0,2) for i in range(N)]
+        Y = sample_discrete_pmf(X, PM, N)
+        qopt,nan,non  = self.viterbi_discrete(Y)
+        return qopt, Y
 
 
 ## -------------------------------------------------------
@@ -159,30 +163,52 @@ def main():
     # TODO: implement in HMM.viterbi_discrete
 
     # --- example usage of viterbi_discrete:
-    optimal_state_sequence, path, prob = hmm1.viterbi_discrete(X1)
+    optimal_state_sequence1, path1, prob1 = hmm1.viterbi_discrete(X1)
 
-    print(optimal_state_sequence)
+    print(optimal_state_sequence1)
     # print([states[i] for i in optimal_state_sequence])
 
     #count the cost of more paths to see the better model
-    costhmm1 = assess_hmm(path,prob)
-    print(costhmm1)
 
-    optimal_state_sequence, path, prob = hmm2.viterbi_discrete(X1)
+    optimal_state_sequence2, path2, prob2 = hmm2.viterbi_discrete(X1)
 
-    print(optimal_state_sequence)
+    print(optimal_state_sequence2)
     # print([states[i] for i in optimal_state_sequence])
 
-    costhmm2 = assess_hmm(path, prob)
-    print(costhmm2)
 
 
     # 1.2.) Sequence Classification
     # TODO
+    evalhmm1 = assess_hmm(path1,prob1)
+    print("Probability of hmm1:",evalhmm1)
+
+    evalhmm2 = assess_hmm(path2, prob2)
+    print("Probability of hmm2:",evalhmm2)
+
 
     # 1.3.) Sample from HMM
     # TODO: implement in HMM.sample
+    Q, X = hmm1.sample(6)
+    print(X, Q)
 
+
+    # 1.4) Markov Model
+    # define HMM 1
+    A1 = np.array([[0.8, 0.05, 0.15],
+                   [0.2, 0.6, 0.2],
+                   [0.2, 0.3, 0.5]])  # Transition Prob. Matrix
+    pi1 = np.array([1 / 3, 1 / 3, 1 / 3])  # Prior
+
+    pi2 = np.dot(pi1,A1)
+    pi3 = np.dot(pi2, A1)
+    print(pi1,"\n",pi2,"\n",pi3)
+
+    pi1 = [0.9, 0.05, 0.05]
+    pin = 0
+    for i in range(20):
+        pin =  np.dot(pi1,A1)
+        pi1 = pin
+    print(pin)
 
 if __name__ == '__main__':
     main()
