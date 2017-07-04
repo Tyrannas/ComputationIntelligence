@@ -163,27 +163,27 @@ def main():
     # TODO: implement in HMM.viterbi_discrete
 
     # --- example usage of viterbi_discrete:
-    optimal_state_sequence1, path1, prob1 = hmm1.viterbi_discrete(X1)
+    optimal_state_sequence1, path1, prob1 = hmm1.viterbi_discrete(X2)
 
-    print(optimal_state_sequence1)
-    # print([states[i] for i in optimal_state_sequence])
+    # print(optimal_state_sequence1)
+    print([states[i] for i in optimal_state_sequence1])
 
     #count the cost of more paths to see the better model
 
-    optimal_state_sequence2, path2, prob2 = hmm2.viterbi_discrete(X1)
+    optimal_state_sequence2, path2, prob2 = hmm2.viterbi_discrete(X2)
 
-    print(optimal_state_sequence2)
-    # print([states[i] for i in optimal_state_sequence])
+    # print(optimal_state_sequence2)
+    print([states[i] for i in optimal_state_sequence2])
 
 
 
     # 1.2.) Sequence Classification
     # TODO
     evalhmm1 = assess_hmm(path1,prob1)
-    print("Probability of hmm1:",evalhmm1)
+    print("Likelihood of hmm1:",evalhmm1)
 
     evalhmm2 = assess_hmm(path2, prob2)
-    print("Probability of hmm2:",evalhmm2)
+    print("Likelihood of hmm2:",evalhmm2)
 
 
     # 1.3.) Sample from HMM
@@ -201,14 +201,17 @@ def main():
 
     pi2 = np.dot(pi1,A1)
     pi3 = np.dot(pi2, A1)
-    print(pi1,"\n",pi2,"\n",pi3)
+    print(" Day 1:",pi1,"\n","Day 2:",pi2,"\n","Day 3:",pi3)
 
-    pi1 = [0.9, 0.05, 0.05]
+    pi1 = [0.4,0.2,0.4]
     pin = 0
-    for i in range(20):
+    converge = np.array([2, 2, 2])
+    while converge.all() > 0.001:
         pin =  np.dot(pi1,A1)
+        converge = abs(pin -pi1)
         pi1 = pin
-    print(pin)
+
+    print("Final State",pin)
 
 if __name__ == '__main__':
     main()
